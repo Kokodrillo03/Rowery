@@ -6,6 +6,7 @@ import { createServer, proxy } from 'aws-serverless-express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import * as express from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common'
 
 let cachedServer: Server;
 
@@ -14,6 +15,13 @@ async function bootstrap(): Promise<Server> {
   const app = await NestFactory.create(
     AppModule,
     new ExpressAdapter(expressApp),
+  );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
   );
   const config = new DocumentBuilder()
     .setTitle('Star Wars API')
