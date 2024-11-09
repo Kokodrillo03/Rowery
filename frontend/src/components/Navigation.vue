@@ -8,10 +8,22 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
       <li class="nav-item">
-        <RouterLink class="nav-link" to="/login">Login</RouterLink>
-      </li>
-      <li class="nav-item">
-        <RouterLink class="nav-link" to="/register">Register</RouterLink>
+        <button
+          v-if="!isAuthenticated"
+          type="button"
+          class="nav-link btn"
+          @click="login"
+        >
+          Login
+        </button>
+        <button
+          v-else
+          type="button"
+          class="nav-link btn"
+          @click="logoutUser"
+        >
+          Logout
+        </button>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -33,10 +45,48 @@
       <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
   </div>
+  <div class="ms-3">
+    <button class="btn btn-primary" @click="callApi">Call API</button>
+    <span v-if="apiResponse" class="ms-2">{{ apiResponse }}</span>
+  </div>
 </div>
 </nav>
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router';
+import { useAuth0 } from '@auth0/auth0-vue';
+import {ref} from "vue";
+
+const apiResponse = ref<string | null>(null);
+
+
+// Initialize Auth0
+const { loginWithRedirect, logout, isAuthenticated, getAccessTokenSilently } = useAuth0();
+
+const login = () => {
+  loginWithRedirect();
+};
+
+const logoutUser = () => {
+  logout();
+};
+
+const callApi = async () => {
+  try {
+    const token = await getAccessTokenSilently();
+    const response = await fetch('http://localhost:3000', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}dsfsf`,
+      },
+    });
+    const data = await response.text(); // Use .text() instead of .json()
+    apiResponse.value = data;
+  } catch (error) {
+    console.error('Error calling API:', error);
+    apiResponse.value = 'API call failed';
+  }
+}
+
 </script>
