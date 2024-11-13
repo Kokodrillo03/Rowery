@@ -14,7 +14,7 @@
           class="nav-link btn"
           @click="login"
         >
-          Login
+          Zaloguj
         </button>
         <button
           v-else
@@ -22,22 +22,17 @@
           class="nav-link btn"
           @click="logoutUser"
         >
-          Logout
+          Wyloguj
         </button>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Dropdown
-        </a>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="#">Action</a></li>
-          <li><a class="dropdown-item" href="#">Another action</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#">Something else here</a></li>
-        </ul>
+      <li class="nav-item">
+        <RouterLink class="nav-link" to="/map">Mapa</RouterLink>
       </li>
       <li class="nav-item">
-        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+        <RouterLink class="nav-link" to="/trips">Trasy</RouterLink>
+      </li>
+      <li class="nav-item">
+        <RouterLink class="nav-link" to="/profile">Twój Profil</RouterLink>
       </li>
     </ul>
     <form class="d-flex" role="search">
