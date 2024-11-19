@@ -73,7 +73,7 @@ const callApi = async () => {
     const response = await fetch('http://localhost:3000', {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}dsfsf`,
+        Authorization: `Bearer ${token}`,
       },
     });
     const data = await response.text(); // Use .text() instead of .json()
