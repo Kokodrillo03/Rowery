@@ -7,10 +7,19 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import * as express from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common'
+import { writeFile } from 'fs/promises';
 
 let cachedServer: Server;
+const pemSource =
+  'https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem';
+export const pemLocation = '/tmp/global-bundle.pem';
+
 
 async function bootstrap(): Promise<Server> {
+  const file = await fetch(pemSource);
+  const pem = await file.text();
+  await writeFile(pemLocation, pem);
+  
   const expressApp = express();
   const app = await NestFactory.create(
     AppModule,

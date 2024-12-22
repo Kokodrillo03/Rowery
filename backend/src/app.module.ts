@@ -10,6 +10,7 @@ import {
 import { AuthzModule } from './authz/authz.module'
 import { UserModule } from './user/user.module'
 import { TripModule } from './trip/trip.module'
+import { pemLocation } from './serverless'
 
 
 @Module({
