@@ -1,5 +1,19 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
 import HomeView from '../views/HomeView.vue';
+import { useAuth0 } from '@auth0/auth0-vue'
+
+const requireAuth = (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext
+) => {
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  if (isAuthenticated.value) {
+    next();
+  } else {
+    loginWithRedirect({ appState: { targetUrl: to.fullPath } });
+  }
+};
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +48,7 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),
+      beforeEnter: requireAuth,
     },
   ],
 });

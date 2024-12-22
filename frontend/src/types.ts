@@ -3,6 +3,6 @@ export interface Route {
   image: string
   title: string
   description: string
-  username: string
-  userImage: string
+  username?: string
+  userImage?: string
 }

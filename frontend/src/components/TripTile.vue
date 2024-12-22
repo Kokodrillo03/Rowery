@@ -7,7 +7,7 @@
       <h5 class="tile-title">{{ title }}</h5>
       <p class="tile-description">{{ description }}</p>
     </div>
-    <div class="tile-footer">
+    <div class="tile-footer" v-if="hasUserInformation">
       <img :src="userImage" alt="User Image" class="user-avatar" />
       <span class="username">{{ username }}</span>
     </div>
@@ -25,8 +25,8 @@ export default defineComponent({
     image: { type: String, required: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
-    username: { type: String, required: true },
-    userImage: { type: String, required: true },
+    username: { type: String, required: false },
+    userImage: { type: String, required: false },
   },
   setup(props) {
     const router = useRouter();
@@ -35,7 +35,12 @@ export default defineComponent({
       router.push(`/trips/${props.id}`);
     };
 
-    return { redirectToTrip };
+    const hasUserInformation = props.username && props.userImage;
+
+    return {
+      redirectToTrip,
+      hasUserInformation
+    };
   },
 });
 </script>
