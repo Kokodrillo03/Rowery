@@ -24,7 +24,7 @@ Resources:
   StaticWebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${AWS::StackName}-vue-app'
+      BucketName: !Ref AppBucketName
       AccessControl: Private
       WebsiteConfiguration:
         IndexDocument: index.html
@@ -34,7 +34,7 @@ Resources:
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref S3Bucket
+      Bucket: !Ref StaticWebsiteBucket
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
