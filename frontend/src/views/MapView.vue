@@ -21,102 +21,118 @@
         <div class="col-auto">
           <button class="btn btn-primary" @click="searchRoute">Get Route</button>
         </div>
+        <div class="col-auto">
+          <select v-model="selectedBikeType" class="form-control">
+            <option v-for="(type, index) in bikeTypes" :key="index" :value="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
-    <div id="map" ref="mapContainer"></div>
+    <div id="map"></div>
   </div>
 </template>
 
+
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
-import L, { Map, TileLayer, Marker, LatLngBounds } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { defineComponent, onMounted, ref } from 'vue';
+import * as L from 'leaflet';
+import axios from 'axios';
+import 'leaflet/dist/leaflet.css'
+
 
 export default defineComponent({
   name: 'MapView',
   setup() {
-    const mapContainer = ref<HTMLDivElement | null>(null);
-    const map = ref<Map | null>(null);
+    const mapRef = ref<L.Map | null>(null);
     const fromDestination = ref<string>('');
     const toDestination = ref<string>('');
-    const fromMarker = ref<Marker | null>(null);
-    const toMarker = ref<Marker | null>(null);
+    const selectedBikeType = ref<string>('road'); // Default bike type
+    const bikeTypes = ref<string[]>(['road', 'mountain', 'hybrid']); // Available bike types
+
+    let map: L.Map;
 
     const initializeMap = () => {
-      if (mapContainer.value) {
-        map.value = L.map(mapContainer.value).setView([51.505, -0.09], 13);
-        const tileLayer: TileLayer = L.tileLayer(
-          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      map = L.map('map').setView([51.1079, 17.0385], 10);
+      mapRef.value = map;
+      const tileLayer: L.TileLayer = L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }
+      );
+      tileLayer.addTo(map);
+    };
+
+    const searchRoute = async () => {
+      try {
+        const fromResponse = await axios.get(
+          `https://nominatim.openstreetmap.org/search`,
           {
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            params: {
+              q: fromDestination.value,
+              format: 'json',
+            },
           }
         );
-        tileLayer.addTo(map.value);
-      }
-    };
 
-    const searchDestination = async (destination: string, isFrom: boolean) => {
-      console.log(destination);
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          destination
-        )}&format=json`
-      );
-      const data = await response.json();
+        if (!fromResponse.data.length) {
+          alert('From location not found');
+          return;
+        }
+        const fromLatLng = {
+          lat: parseFloat(fromResponse.data[0].lat),
+          lng: parseFloat(fromResponse.data[0].lon),
+        };
 
-      if (data.length > 0) {
-        const { lat, lon } = data[0];
-        const coords = [parseFloat(lat), parseFloat(lon)];
-
-        if (isFrom) {
-          if (fromMarker.value) {
-            fromMarker.value.setLatLng(coords);
-          } else {
-            fromMarker.value = L.marker(coords)
-              .addTo(map.value!)
-              .bindPopup(destination);
+        const toResponse = await axios.get(
+          `https://nominatim.openstreetmap.org/search`,
+          {
+            params: {
+              q: toDestination.value,
+              format: 'json',
+            },
           }
+        );
+
+        if (!toResponse.data.length) {
+          alert('To location not found');
+          return;
+        }
+        const toLatLng = {
+          lat: parseFloat(toResponse.data[0].lat),
+          lng: parseFloat(toResponse.data[0].lon),
+        };
+
+        const routeResponse = await axios.get(
+          `https://api.rowerowydolnyslask.pl/route`,
+          {
+            params: {
+              start: `${fromLatLng.lat},${fromLatLng.lng}`,
+              end: `${toLatLng.lat},${toLatLng.lng}`,
+              bikeType: selectedBikeType.value,
+            },
+          }
+        );
+
+        const routeData = routeResponse.data;
+
+        if (routeData && routeData.routes && routeData.routes[0]) {
+          const routeCoordinates = routeData.routes[0].geometry.coordinates.map(
+            (coord: number[]) => [coord[1], coord[0]]
+          );
+
+          const polyline = L.polyline(routeCoordinates, { color: 'blue' }).addTo(map);
+          map.fitBounds(polyline.getBounds());
         } else {
-          if (toMarker.value) {
-            toMarker.value.setLatLng(coords);
-          } else {
-            toMarker.value = L.marker(coords)
-              .addTo(map.value!)
-              .bindPopup(destination);
-          }
+          alert('Route not found');
         }
-      } else {
-        alert('Location not found');
+      } catch (error) {
+        console.error('Error fetching route:', error);
+        alert('An error occurred while searching for the route');
       }
-    };
-
-    const updateMarkers = () => {
-      if (fromDestination.value) {
-        searchDestination(fromDestination.value, true);
-      } else {
-        if (fromMarker.value) {
-          map.value?.removeLayer(fromMarker.value);
-          fromMarker.value = null;
-        }
-      }
-      if (toDestination.value) {
-        searchDestination(toDestination.value, false);
-      } else {
-        if (toMarker.value) {
-          map.value?.removeLayer(toMarker.value);
-          toMarker.value = null;
-        }
-      }
-
-      if (fromMarker.value && toMarker.value) {
-        const bounds = new LatLngBounds(fromMarker.value.getLatLng(), toMarker.value.getLatLng());
-        map.value?.fitBounds(bounds, { padding: [50, 50] });
-      }
-    };
-
-    const searchRoute = () => {
-      updateMarkers();
     };
 
     onMounted(() => {
@@ -124,15 +140,16 @@ export default defineComponent({
     });
 
     return {
-      mapContainer,
       fromDestination,
       toDestination,
       searchRoute,
-      updateMarkers,
+      selectedBikeType,
+      bikeTypes,
     };
   },
 });
 </script>
+
 
 <style scoped>
 .map-container {
