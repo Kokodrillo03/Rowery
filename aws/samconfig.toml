@@ -1,0 +1,11 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "rowerowy-dolny-slask"
+resolve_s3 = true
+s3_prefix = "rowerowy-dolny-slask"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+template_file = "template.yaml"
+profile = "personal"
+image_repositories = []

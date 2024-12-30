@@ -29,4 +29,8 @@ export class TripService {
     async getUsersTrips(userId: string): Promise<TripEntity[]> {
         return await this.tripModel.find({ userId });
     }
+
+    async getAllTrips(): Promise<TripEntity[]> {
+        return await this.tripModel.find();
+    }
 }

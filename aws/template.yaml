@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Full-stack CloudFormation template for Vue.js frontend and backend application.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: rowerowydolnyslask.pl
+  HostedZoneId:
+    Type: String
+    Default: Z10267972BH9QQFAZ5C7I
+  GraphHopperApiKey:
+    Type: String
+    NoEcho: true
+    Description: 'The API key for GraphHopper'
+  DocumentDBPassword:
+    Type: String
+    NoEcho: true
+    Description: 'The password for the DocumentDB admin user'
+  AppBucketName:
+    Type: String
+
+Resources:
+  # Frontend S3 Bucket
+  StaticWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${AWS::StackName}-vue-app'
+      AccessControl: Private
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+
+  # S3 Bucket Policy for CloudFront Access
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::rowerowy-dolny-slask-vue-app/*"
+
+
+  # CloudFront Origin Access Identity
+  CloudFrontOriginAccessId:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Access identity for CloudFront to access S3 bucket.
+
+  # CloudFront Distribution
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt StaticWebsiteBucket.DomainName
+            Id: S3Origin
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessId}'
+        Enabled: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+        HttpVersion: http2
+        PriceClass: PriceClass_100
+
+  # Route 53 Record for Frontend
+  Route53RecordSetFrontend:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # Fixed CloudFront Hosted Zone ID
+
+  Route53WWWRecordSetFrontend:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub 'www.${DomainName}'
+      Type: CNAME
+      AliasTarget:
+        DNSName: !Ref DomainName
+        HostedZoneId: !Ref HostedZoneId
+
+  # Backend Nested Stack
+  BackendStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: 'backendApp.yaml'
+      Parameters:
+        GraphHopperApiKey: !Ref GraphHopperApiKey
+        DocumentDBPassword: !Ref DocumentDBPassword
+
+Outputs:
+  WebsiteURL:
+    Description: The CloudFront URL of the frontend website.
+    Value: !GetAtt CloudFrontDistribution.DomainName
+    Export:
+      Name: WebsiteURL

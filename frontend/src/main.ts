@@ -14,7 +14,8 @@ app.use(
     clientId: "7coPsjBBu5bz0IFeP6kgIV2ub22lDUI1",
     authorizationParams: {
       redirect_uri: window.location.origin,
-      audience: 'https://api.rowerowydolnyslask'
+      audience: 'https://api.rowerowydolnyslask',
+      scope: 'openid profile email read:current_user',
     }
   })
 );

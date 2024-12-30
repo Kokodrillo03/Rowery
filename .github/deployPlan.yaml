@@ -1,0 +1,56 @@
+name: Deploy Application
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Application
+    runs-on: ubuntu-latest
+
+    env:
+      APP_BUCKET_NAME:  rowerowy-dolny-slask-vue-app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install and Build Backend
+        working-directory: ./backend
+        run: |
+          npm install
+          npm run build
+
+      - name: Install and Build Frontend
+        working-directory: ./frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy CloudFormation Stack
+        working-directory: ./aws
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: >
+          sam deploy --parameter-overrides
+          "DocumentDBPassword=${{ secrets.DOCUMENT_DB_PASSWORD }}
+          GraphHopperApiKey=${{ secrets.GRAPH_HOPPER_API_KEY }}
+          AppBucketName=$APP_BUCKET_NAME"
+          
+
+      - name: Upload Frontend to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          
+          aws s3 sync ./frontend/dist s3://$APP_BUCKET_NAME

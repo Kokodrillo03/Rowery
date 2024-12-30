@@ -15,6 +15,7 @@
   "dependencies": {
     "@auth0/auth0-vue": "^2.3.3",
     "@popperjs/core": "^2.11.8",
+    "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "leaflet": "^1.9.4",
     "vue": "^3.5.11",

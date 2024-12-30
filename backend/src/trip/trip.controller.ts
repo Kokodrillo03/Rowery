@@ -28,5 +28,9 @@ export class TripController {
         return this.tripService.getTrip(id);
     }
 
+    @Get()
+    getAllTrips() {
+        return this.tripService.getAllTrips();
+    }
 }
 

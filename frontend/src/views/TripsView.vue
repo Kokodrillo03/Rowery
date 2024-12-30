@@ -7,14 +7,14 @@
       </div>
     </div>
     <div v-else class="row g-4">
-      <div v-for="(route, index) in routes" :key="index" class="col-12 col-md-6 col-lg-4">
+      <div v-for="(trip, index) in trips" :key="index" class="col-12 col-md-6 col-lg-4">
         <TripTile
-          :id="route.id"
-          :image="route.image"
-          :title="route.title"
-          :description="route.description"
-          :username="route.username"
-          :userImage="route.userImage"
+          :id="trip.id"
+          :image="trip.image"
+          :title="trip.title"
+          :description="trip.description"
+          :username="trip.username"
+          :userImage="trip.userImage"
         />
       </div>
     </div>
@@ -26,23 +26,30 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import TripTile from '@/components/TripTile.vue';
 import type { Route } from '@/types'
+import { useAuth0 } from '@auth0/auth0-vue'
 
 export default defineComponent({
   name: 'RoutesListView',
   components: { TripTile },
   setup() {
-    const routes = ref<Route[]>([]);
+    const trips = ref<Route[]>([]);
     const loading = ref(true);
+
+    const  { getAccessTokenSilently } = useAuth0();
 
     const fetchRoutes = async () => {
       try {
-        const response = await fetch('https://mocky.io/v2/your-endpoint-id'); // Replace with actual Mocky endpoint
-        if (!response.ok) throw new Error('Failed to fetch routes');
-        const data = await response.json();
-        routes.value = data;
+        const token = await getAccessTokenSilently();
+        const response = await fetch(`http://localhost:3000/trip`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        trips.value = await response.json();
       } catch (error) {
         console.error(error);
-        routes.value = [
+        trips.value = [
           {
             id: 1,
             image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
@@ -95,7 +102,7 @@ export default defineComponent({
 
 
     return {
-      routes,
+      trips,
       loading,
     };
   },

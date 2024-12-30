@@ -6,6 +6,13 @@ Parameters:
     Type: String
     NoEcho: true
     Description: 'The password for the DocumentDB admin user'
+  GraphHopperApiUrl:
+    Type: String
+    Default: https://graphhopper.com/api/1
+  GraphHopperApiKey:
+    Type: String
+    NoEcho: true
+    Description: 'The API key for GraphHopper'
 
 Resources:
   MyVPC:
@@ -23,7 +30,7 @@ Resources:
     Properties:
       VpcId: !Ref MyVPC
       CidrBlock: 10.0.5.0/24
-      AvailabilityZone: !Select [0, !GetAZs ]
+      AvailabilityZone: !Select [0, !GetAZs: '' ]
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -34,7 +41,7 @@ Resources:
     Properties:
       VpcId: !Ref MyVPC
       CidrBlock: 10.0.3.0/24
-      AvailabilityZone: !Select [0, !GetAZs ]
+      AvailabilityZone: !Select [0, !GetAZs: '' ]
       Tags:
         - Key: Name
           Value: PrivateSubnet1
@@ -44,7 +51,7 @@ Resources:
     Properties:
       VpcId: !Ref MyVPC
       CidrBlock: 10.0.4.0/24
-      AvailabilityZone: !Select [1, !GetAZs ]
+      AvailabilityZone: !Select [1, !GetAZs: '' ]
       Tags:
         - Key: Name
           Value: PrivateSubnet2
@@ -152,7 +159,7 @@ Resources:
   StarWarsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ./dist/serverless.handler
+      Handler: ../backend/dist/serverless.handler
       Runtime: nodejs20.x
       MemorySize: 512
       Timeout: 60
@@ -171,6 +178,8 @@ Resources:
           MONGO_REPLICA_SET: rs0
           MONGO_READ_PREFERENCE: primaryPreferred
           MONGO_RETRY_WRITES: false
+          GRAPH_HOPPER_API_URL: !Ref GraphHopperApiUrl
+          GRAPH_HOPPER_API_KEY: !Ref GraphHopperApiKey
       VpcConfig:
         SecurityGroupIds:
           - !GetAtt DocumentDBSecurityGroup.GroupId
@@ -245,9 +254,3 @@ Outputs:
   StarWarsApi:
     Description: 'API Gateway endpoint URL for the  function'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
-  CharacterRootApi:
-    Description: 'API Gateway endpoint URL for the /character endpoint'
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/character'
-  DocumentationRoot:
-    Description: 'API Gateway endpoint URL for the /doc endpoint'
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/doc'
