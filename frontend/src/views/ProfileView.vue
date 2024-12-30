@@ -3,7 +3,7 @@
     <div class="row justify-content-center">
       <div class="col-md-8 text-center">
         <div class="profile-header mb-4">
-          <img :src="user.picture" alt="Profile Picture" class="rounded-circle profile-picture" />
+          <img :src="user?.picture" alt="Profile Picture" class="rounded-circle profile-picture" />
           <h2 class="mt-3">{{ user?.name }}</h2>
           <p class="text-muted">{{ user?.profile }}</p>
         </div>
