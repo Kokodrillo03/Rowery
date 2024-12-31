@@ -115,13 +115,13 @@ Resources:
 
   Route53RecordSetBackend:
     Type: AWS::Route53::RecordSet
+    DependsOn: BackendStack
     Properties:
       HostedZoneId: !Ref HostedZoneId
       Name: !Sub 'api.${DomainName}'
-      Type: A
-      AliasTarget:
-        DNSName: !GetAtt CloudFrontDistribution.DomainName
-        HostedZoneId: Z2FDTNDATAQYW2 # Fixed CloudFront Hosted Zone ID
+      Type: CNAME
+      ResourceRecords:
+        - !GetAtt BackendStack.Outputs.ApiGatewayUrl
 
 Outputs:
   WebsiteURL:
