@@ -152,7 +152,7 @@ Resources:
     UpdateReplacePolicy: Retain
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub 'star-wars-${AWS::StackName}-password'
+      Name: !Sub '${AWS::StackName}-mongo-password'
       Description: 'The password for the DocumentDB admin user'
       SecretString: !Ref DocumentDBPassword
 
@@ -170,11 +170,11 @@ Resources:
       Environment:
         Variables:
           NODE_ENV: production
-          MONGO_USER: Admin
+          MONGO_USER: roweryAdmin
           MONGO_SECRET_ID: !Ref MongoPasswordSecret
           MONGO_HOST: !GetAtt DocumentDBCluster.Endpoint
           MONGO_PORT: !GetAtt DocumentDBCluster.Port
-          MONGO_DB_NAME: star-wars
+          MONGO_DB_NAME: rowery
           MONGO_REPLICA_SET: rs0
           MONGO_READ_PREFERENCE: primaryPreferred
           MONGO_RETRY_WRITES: false
@@ -207,7 +207,7 @@ Resources:
     UpdateReplacePolicy: Delete
     Type: AWS::DocDB::DBCluster
     Properties:
-      MasterUsername: Admin
+      MasterUsername: roweryAdmin
       MasterUserPassword: !Ref DocumentDBPassword
       DBClusterIdentifier: !Sub ${AWS::StackName}-cluster2
       EngineVersion: '4.0.0'
