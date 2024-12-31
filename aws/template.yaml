@@ -99,10 +99,10 @@ Resources:
     Properties:
       HostedZoneId: !Ref HostedZoneId
       Name: !Sub 'www.${DomainName}'
-      Type: CNAME
+      Type: A
       AliasTarget:
-        DNSName: !Ref DomainName
-        HostedZoneId: !Ref HostedZoneId
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # Fixed CloudFront Hosted Zone ID
 
   # Backend Nested Stack
   BackendStack:
