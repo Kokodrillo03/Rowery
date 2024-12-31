@@ -124,6 +124,7 @@ Resources:
       HostedZoneId: !Ref HostedZoneId
       Name: !Sub 'api.${DomainName}'
       Type: CNAME
+      TTL: '60'
       ResourceRecords:
         - !GetAtt BackendStack.Outputs.ApiEndpoint
 
