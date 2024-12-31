@@ -25,12 +25,7 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref AppBucketName
-      AccessControl: PublicRead
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
-        BlockPublicPolicy: false
-        IgnorePublicAcls: false
-        RestrictPublicBuckets: false
+      AccessControl: Private
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
