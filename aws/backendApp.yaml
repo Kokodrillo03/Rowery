@@ -156,7 +156,7 @@ Resources:
       Description: 'The password for the DocumentDB admin user'
       SecretString: !Ref DocumentDBPassword
 
-  StarWarsFunction:
+  NestFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: ../backend/dist/serverless.handler
@@ -170,7 +170,7 @@ Resources:
       Environment:
         Variables:
           NODE_ENV: production
-          MONGO_USER: StarWarsAdmin
+          MONGO_USER: Admin
           MONGO_SECRET_ID: !Ref MongoPasswordSecret
           MONGO_HOST: !GetAtt DocumentDBCluster.Endpoint
           MONGO_PORT: !GetAtt DocumentDBCluster.Port
@@ -187,26 +187,11 @@ Resources:
           - !Ref PrivateSubnet1
           - !Ref PrivateSubnet2
       Events:
-        CharacterRootApi:
+        Def:
           Type: Api
           Properties:
-            Path: /character
+            Path: /{proxy+}
             Method: ANY
-        CharacterApi:
-          Type: Api
-          Properties:
-            Path: /character/{proxy+}
-            Method: ANY
-        DocumentationRoot:
-          Type: Api
-          Properties:
-            Path: /doc
-            Method: GET
-        DocumentationAssets:
-          Type: Api
-          Properties:
-            Path: /doc/{proxy+}
-            Method: GET
 
   DocumentDBSubnetGroup:
     Type: AWS::DocDB::DBSubnetGroup
@@ -222,7 +207,7 @@ Resources:
     UpdateReplacePolicy: Delete
     Type: AWS::DocDB::DBCluster
     Properties:
-      MasterUsername: StarWarsAdmin
+      MasterUsername: Admin
       MasterUserPassword: !Ref DocumentDBPassword
       DBClusterIdentifier: !Sub ${AWS::StackName}-cluster2
       EngineVersion: '4.0.0'
@@ -251,6 +236,6 @@ Resources:
           CidrIp: 0.0.0.0/0
 
 Outputs:
-  StarWarsApi:
+  ApiEndpoint:
     Description: 'API Gateway endpoint URL for the  function'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
