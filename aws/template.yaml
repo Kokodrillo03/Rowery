@@ -25,10 +25,20 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref AppBucketName
-      AccessControl: Private
+      AccessControl: PublicRead
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: [ "*" ]
+            AllowedMethods: [ "GET", "HEAD" ]
+            AllowedOrigins: [ "*" ]
 
   # S3 Bucket Policy for CloudFront Access
   BucketPolicy:
@@ -40,8 +50,7 @@ Resources:
         Statement:
           - Sid: AllowCloudFrontAccess
             Effect: Allow
-            Principal:
-              Service: cloudfront.amazonaws.com
+            Principal: '*'
             Action: "s3:GetObject"
             Resource: !Sub "arn:aws:s3:::rowerowy-dolny-slask-vue-app/*"
 
