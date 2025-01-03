@@ -40,10 +40,6 @@ jobs:
         run: |
           sam build
 
-      - working-directory: ./backend
-        run: |
-          du -sh * ./backend/.aws-sam
-
       - name: Deploy CloudFormation Stack
         working-directory: ./backend
         env:
