@@ -26,9 +26,6 @@ Resources:
     Properties:
       BucketName: !Ref AppBucketName
       AccessControl: Private
-      WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: index.html
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders: [ "*" ]
@@ -83,7 +80,12 @@ Resources:
             Cookies:
               Forward: none
         ViewerCertificate:
-          CloudFrontDefaultCertificate: true
+          AcmCertificateArn: arn:aws:acm:us-east-1:586799309278:certificate/fcee0ea2-cfbc-45ff-af1b-ab2771b9c4e4
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2
+        Aliases:
+          - !Sub 'www.${DomainName}'
+          - !Ref DomainName
         HttpVersion: http2
         PriceClass: PriceClass_100
 
@@ -109,13 +111,13 @@ Resources:
         HostedZoneId: Z2FDTNDATAQYW2 # Fixed CloudFront Hosted Zone ID
 
   # Backend Nested Stack
-#  BackendStack:
-#    Type: AWS::CloudFormation::Stack
-#    Properties:
-#      TemplateURL: 'backendApp.yaml'
-#      Parameters:
-#        GraphHopperApiKey: !Ref GraphHopperApiKey
-#        DocumentDBPassword: !Ref DocumentDBPassword
+  BackendStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: 'backendApp.yaml'
+      Parameters:
+        GraphHopperApiKey: !Ref GraphHopperApiKey
+        DocumentDBPassword: !Ref DocumentDBPassword
 #
 #  Route53RecordSetBackend:
 #    Type: AWS::Route53::RecordSet

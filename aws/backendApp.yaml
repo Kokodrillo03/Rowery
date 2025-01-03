@@ -180,6 +180,8 @@ Resources:
           MONGO_RETRY_WRITES: false
           GRAPH_HOPPER_API_URL: !Ref GraphHopperApiUrl
           GRAPH_HOPPER_API_KEY: !Ref GraphHopperApiKey
+          AUTH0_ISSUER_URL: 'https://dev-3zf4ofit8rok4lhx.us.auth0.com/'
+          AUTH0_AUDIENCE: 'https://api.rowerowydolnyslask'
       VpcConfig:
         SecurityGroupIds:
           - !GetAtt DocumentDBSecurityGroup.GroupId
