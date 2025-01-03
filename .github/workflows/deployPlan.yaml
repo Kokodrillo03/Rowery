@@ -29,10 +29,6 @@ jobs:
           npm install
           npm run build
 
-      - name: copy deps
-        working-directory: ./backend
-        run: cp -r ./node_modules ./dist
-
       - name: Install and Build Frontend
         working-directory: ./frontend
         run: |
