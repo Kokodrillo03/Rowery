@@ -46,7 +46,8 @@ Resources:
         Statement:
           - Sid: AllowCloudFrontAccess
             Effect: Allow
-            Principal: '*'
+            Principal:
+              Service: cloudfront.amazonaws.com
             Action: "s3:GetObject"
             Resource: !Sub "arn:aws:s3:::rowerowy-dolny-slask-vue-app/*"
 
