@@ -18,6 +18,9 @@ Parameters:
     Description: 'The password for the DocumentDB admin user'
   AppBucketName:
     Type: String
+  GraphHopperApiUrl:
+    Type: String
+    Default: https://graphhopper.com/api/1
 
 Resources:
 
