@@ -45,7 +45,7 @@ async function bootstrap(): Promise<Server> {
   return createServer(expressApp);
 }
 
-export const handler: APIGatewayProxyHandler = async (event, context) => {
+export const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
   if (!cachedServer) {
     cachedServer = await bootstrap();
   }
