@@ -114,7 +114,7 @@ Resources:
   BackendStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: ./backend/backendApp.yaml
+      TemplateURL: /backend/backendApp.yaml
       Parameters:
         GraphHopperApiKey: !Ref GraphHopperApiKey
         DocumentDBPassword: !Ref DocumentDBPassword
