@@ -271,8 +271,7 @@ Resources:
   NestFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./dist/
-      Handler: main.lambdaHandler
+      Handler: dist/main.lambdaHandler
       Runtime: nodejs20.x
       MemorySize: 512
       Timeout: 60
