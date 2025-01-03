@@ -271,7 +271,8 @@ Resources:
   NestFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ./dist/serverless.handler
+      CodeUri: ./dist/serverless
+      Handler: serverless.handler
       Runtime: nodejs20.x
       MemorySize: 512
       Timeout: 60
