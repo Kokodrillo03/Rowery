@@ -1,0 +1,138 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Full-stack CloudFormation template for Vue.js frontend and backend application.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: rowerowydolnyslask.pl
+  HostedZoneId:
+    Type: String
+    Default: Z10267972BH9QQFAZ5C7I
+  GraphHopperApiKey:
+    Type: String
+    NoEcho: true
+    Description: 'The API key for GraphHopper'
+  DocumentDBPassword:
+    Type: String
+    NoEcho: true
+    Description: 'The password for the DocumentDB admin user'
+  AppBucketName:
+    Type: String
+
+Resources:
+  # Frontend S3 Bucket
+  StaticWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref AppBucketName
+      AccessControl: Private
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: [ "*" ]
+            AllowedMethods: [ "GET", "HEAD" ]
+            AllowedOrigins: [ "*" ]
+
+  # S3 Bucket Policy for CloudFront Access
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref StaticWebsiteBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal: '*'
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::rowerowy-dolny-slask-vue-app/*"
+
+
+  # CloudFront Origin Access Identity
+  CloudFrontOriginAccessId:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Access identity for CloudFront to access S3 bucket.
+
+  # CloudFront Distribution
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt StaticWebsiteBucket.DomainName
+            Id: S3Origin
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessId}'
+        Enabled: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+        ViewerCertificate:
+          AcmCertificateArn: arn:aws:acm:us-east-1:586799309278:certificate/fcee0ea2-cfbc-45ff-af1b-ab2771b9c4e4
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        Aliases:
+          - !Sub 'www.${DomainName}'
+          - !Ref DomainName
+        HttpVersion: http2
+        PriceClass: PriceClass_100
+
+  # Route 53 Record for Frontend
+  Route53RecordSetFrontend:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # Fixed CloudFront Hosted Zone ID
+
+  Route53WWWRecordSetFrontend:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub 'www.${DomainName}'
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # Fixed CloudFront Hosted Zone ID
+
+  # Backend Nested Stack
+  BackendStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: template.yaml
+      Parameters:
+        GraphHopperApiKey: !Ref GraphHopperApiKey
+        DocumentDBPassword: !Ref DocumentDBPassword
+#
+#  Route53RecordSetBackend:
+#    Type: AWS::Route53::RecordSet
+#    DependsOn: BackendStack
+#    Properties:
+#      HostedZoneId: !Ref HostedZoneId
+#      Name: !Sub 'api.${DomainName}'
+#      Type: CNAME
+#      TTL: '60'
+#      ResourceRecords:
+#        - !GetAtt BackendStack.Outputs.ApiEndpoint
+
+Outputs:
+  WebsiteURL:
+    Description: The CloudFront URL of the frontend website.
+    Value: !GetAtt CloudFrontDistribution.DomainName
+    Export:
+      Name: WebsiteURL

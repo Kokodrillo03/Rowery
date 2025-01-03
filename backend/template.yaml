@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Full-stack CloudFormation template for Vue.js frontend and backend application.
+Transform: AWS::Serverless-2016-10-31
 
 Parameters:
   DomainName:
@@ -20,6 +20,7 @@ Parameters:
     Type: String
 
 Resources:
+
   # Frontend S3 Bucket
   StaticWebsiteBucket:
     Type: AWS::S3::Bucket
@@ -110,27 +111,244 @@ Resources:
         DNSName: !GetAtt CloudFrontDistribution.DomainName
         HostedZoneId: Z2FDTNDATAQYW2 # Fixed CloudFront Hosted Zone ID
 
-  # Backend Nested Stack
-  BackendStack:
-    Type: AWS::CloudFormation::Stack
+
+  #  Route53RecordSetBackend:
+  #    Type: AWS::Route53::RecordSet
+  #    DependsOn: BackendStack
+  #    Properties:
+  #      HostedZoneId: !Ref HostedZoneId
+  #      Name: !Sub 'api.${DomainName}'
+  #      Type: CNAME
+  #      TTL: '60'
+  #      ResourceRecords:
+  #        - !GetAtt BackendStack.Outputs.ApiEndpoint
+
+  MyVPC:
+    Type: AWS::EC2::VPC
     Properties:
-      TemplateURL: backendApp.yaml
-      Parameters:
-        GraphHopperApiKey: !Ref GraphHopperApiKey
-        DocumentDBPassword: !Ref DocumentDBPassword
-#
-#  Route53RecordSetBackend:
-#    Type: AWS::Route53::RecordSet
-#    DependsOn: BackendStack
-#    Properties:
-#      HostedZoneId: !Ref HostedZoneId
-#      Name: !Sub 'api.${DomainName}'
-#      Type: CNAME
-#      TTL: '60'
-#      ResourceRecords:
-#        - !GetAtt BackendStack.Outputs.ApiEndpoint
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: MyVPC
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 10.0.5.0/24
+      AvailabilityZone: !Select [0, !GetAZs '' ]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: PublicSubnet
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 10.0.3.0/24
+      AvailabilityZone: !Select [0, !GetAZs '' ]
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet1
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 10.0.4.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet2
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: MyInternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: PublicRouteTable
+
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  PrivateSubnet1RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable1
+
+  PrivateSubnet2RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable2
+
+  NatGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayEIP.AllocationId
+      SubnetId: !Ref PublicSubnet
+      Tags:
+        - Key: Name
+          Value: MyNatGateway
+
+  PrivateSubnet1DefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateSubnet1RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  PrivateSubnet2DefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateSubnet2RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateSubnet1RouteTable
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateSubnet2RouteTable
+
+  MongoPasswordSecret:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub '${AWS::StackName}-mongo-password'
+      Description: 'The password for the DocumentDB admin user'
+      SecretString: !Ref DocumentDBPassword
+
+  NestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ./dist/serverless.handler
+      Runtime: nodejs18.x
+      MemorySize: 512
+      Timeout: 60
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref MongoPasswordSecret
+        - AWSLambdaVPCAccessExecutionRole
+      Environment:
+        Variables:
+          NODE_ENV: production
+          MONGO_USER: roweryAdmin
+          MONGO_SECRET_ID: !Ref MongoPasswordSecret
+          MONGO_HOST: !GetAtt DocumentDBCluster.Endpoint
+          MONGO_PORT: !GetAtt DocumentDBCluster.Port
+          MONGO_DB_NAME: rowery
+          MONGO_REPLICA_SET: rs0
+          MONGO_READ_PREFERENCE: primaryPreferred
+          MONGO_RETRY_WRITES: false
+          GRAPH_HOPPER_API_URL: !Ref GraphHopperApiUrl
+          GRAPH_HOPPER_API_KEY: !Ref GraphHopperApiKey
+          AUTH0_ISSUER_URL: 'https://dev-3zf4ofit8rok4lhx.us.auth0.com/'
+          AUTH0_AUDIENCE: 'https://api.rowerowydolnyslask'
+      VpcConfig:
+        SecurityGroupIds:
+          - !GetAtt DocumentDBSecurityGroup.GroupId
+        SubnetIds:
+          - !Ref PrivateSubnet1
+          - !Ref PrivateSubnet2
+      Events:
+        Def:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+
+  DocumentDBSubnetGroup:
+    Type: AWS::DocDB::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub ${AWS::StackName}-subnet-group
+      DBSubnetGroupDescription: 'Subnet group for DocumentDB'
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+
+  DocumentDBCluster:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Type: AWS::DocDB::DBCluster
+    Properties:
+      MasterUsername: roweryAdmin
+      MasterUserPassword: !Ref DocumentDBPassword
+      DBClusterIdentifier: !Sub ${AWS::StackName}-cluster2
+      EngineVersion: '4.0.0'
+      VpcSecurityGroupIds:
+        - !GetAtt DocumentDBSecurityGroup.GroupId
+      DBSubnetGroupName: !Ref DocumentDBSubnetGroup
+
+  DocumentDBInstance:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Type: AWS::DocDB::DBInstance
+    Properties:
+      DBClusterIdentifier: !Ref DocumentDBCluster
+      DBInstanceClass: db.t4g.medium
+      DBInstanceIdentifier: !Sub ${AWS::StackName}-instance2
+
+  DocumentDBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'Security group for DocumentDB'
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 27017
+          ToPort: 27017
+          CidrIp: 0.0.0.0/0
 
 Outputs:
+  ApiEndpoint:
+    Description: 'API Gateway endpoint URL for the  function'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
   WebsiteURL:
     Description: The CloudFront URL of the frontend website.
     Value: !GetAtt CloudFrontDistribution.DomainName
