@@ -35,6 +35,11 @@ jobs:
           npm install
           npm run build
 
+      - name: Build sam
+        working-directory: ./backend
+        run: |
+          sam build
+
       - name: Deploy CloudFormation Stack
         working-directory: ./backend
         env:
