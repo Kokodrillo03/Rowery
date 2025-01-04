@@ -10,8 +10,9 @@ import {
 import { AuthzModule } from './authz/authz.module'
 import { UserModule } from './user/user.module'
 import { TripModule } from './trip/trip.module'
-import { pemLocation } from './main'
 import {RoutingModule} from "./routing/routing.module";
+
+const pemLocation = '/tmp/global-bundle.pem';
 
 
 @Module({

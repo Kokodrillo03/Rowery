@@ -10,9 +10,10 @@ import { ValidationPipe } from '@nestjs/common'
 import { writeFile } from 'fs/promises';
 
 let cachedServer: Server;
+
 const pemSource =
-  'https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem';
-export const pemLocation = '/tmp/global-bundle.pem';
+    'https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem';
+const pemLocation = '/tmp/global-bundle.pem';
 
 
 async function bootstrap(): Promise<Server> {
@@ -45,7 +46,7 @@ async function bootstrap(): Promise<Server> {
   return createServer(expressApp);
 }
 
-export const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
+export const handler: APIGatewayProxyHandler = async (event, context) => {
   if (!cachedServer) {
     cachedServer = await bootstrap();
   }
