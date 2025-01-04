@@ -52,3 +52,6 @@ export const handler: APIGatewayProxyHandler = async (event, context) => {
   }
   return proxy(cachedServer, event, context, 'PROMISE').promise;
 };
+
+module.exports = { handler };
+module.exports.handler = handler;
