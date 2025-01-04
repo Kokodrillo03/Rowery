@@ -140,6 +140,7 @@ export default defineComponent({
           const endCords = routeCoordinates[routeCoordinates.length - 1] as LatLngExpression;
           const startMarker = L.marker(startCords);
           const endMarker = L.marker(endCords);
+          L.Icon.Default.imagePath='src/assets/'
           routeLayers = L.layerGroup([polyline, startMarker, endMarker]).addTo(map);
           map.fitBounds(polyline.getBounds());
         } else {
