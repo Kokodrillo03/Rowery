@@ -1,5 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {HttpService} from "@nestjs/axios";
+import {firstValueFrom} from "rxjs";
 
 @Injectable()
 export class RoutingService {
@@ -18,7 +19,7 @@ export class RoutingService {
         const baseUrl = process.env.GRAPH_HOPPER_API_URL;
         const apiKey = process.env.GRAPH_HOPPER_API_KEY;
         const graphHopperBikeType = bikeTypeGraphHopperTypeMap[bikeType];
-        const {data} = await this.httpService.get(`${baseUrl}/route?point=${from}&point=${to}&vehicle=${graphHopperBikeType}&key=${apiKey}`);
+        const {data} = await firstValueFrom(this.httpService.get(`${baseUrl}/route?point=${from}&point=${to}&vehicle=${graphHopperBikeType}&key=${apiKey}`).pipe());
         return data;
     }
 }
