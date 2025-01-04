@@ -40,6 +40,7 @@ import { defineComponent, onMounted, ref } from 'vue';
 import * as L from 'leaflet';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css'
+import {LatLngExpression} from "leaflet";
 
 
 export default defineComponent({
@@ -123,7 +124,7 @@ export default defineComponent({
         const routeData = routeResponse.data;
         console.log(routeData);
         if (routeData) {
-          let routeCoordinates: number[][];
+          let routeCoordinates: LatLngExpression[][];
           if(routeData.isEncoded){
             routeCoordinates = L.Polyline.fromEncoded(routeData.points).getLatLngs();
           } else {
