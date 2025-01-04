@@ -6,8 +6,14 @@ module.exports = (options, webpack) => {
 
     return {
         ...options,
-
+        entry: './src/main.ts',  // Make sure this points to your main file
+        target: 'node',
         externals: [],
+        output: {
+            ...options.output,
+            libraryTarget: 'commonjs2',
+            filename: 'main.js',
+        },
         plugins: [
             ...options.plugins,
             new webpack.IgnorePlugin({
@@ -23,5 +29,13 @@ module.exports = (options, webpack) => {
                 },
             }),
         ],
+        optimization: {
+            minimize: false,
+            nodeEnv: false
+        },
+        resolve: {
+            ...options.resolve,
+            extensions: ['.ts', '.js', '.json'],
+        },
     };
 };
