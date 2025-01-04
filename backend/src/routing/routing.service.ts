@@ -22,7 +22,11 @@ export class RoutingService {
         try {
             const response = await firstValueFrom(this.httpService.get(`${baseUrl}/route?point=${from}&point=${to}&vehicle=${graphHopperBikeType}&key=${apiKey}`).pipe());
             console.log(response)
-            return response.data;
+            const path = response.data.paths[0];
+            return {
+                isEncoded: path.points_encoded,
+                points: path.points,
+            }
         } catch (e) {
             console.log(e);
             throw new Error('Error while fetching route');

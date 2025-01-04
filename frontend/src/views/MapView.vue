@@ -122,11 +122,15 @@ export default defineComponent({
 
         const routeData = routeResponse.data;
         console.log(routeData);
-        if (routeData && routeData.routes && routeData.routes[0]) {
-          const routeCoordinates = routeData.routes[0].geometry.coordinates.map(
-            (coord: number[]) => [coord[1], coord[0]]
-          );
-
+        if (routeData) {
+          let routeCoordinates: number[][];
+          if(routeData.isEncoded){
+            routeCoordinates = L.Polyline.fromEncoded(routeData.points).getLatLngs();
+          } else {
+            routeCoordinates = routeData.points.map(
+              (coord: number[]) => [coord[1], coord[0]]
+            );
+          }
           const polyline = L.polyline(routeCoordinates, { color: 'blue' }).addTo(map);
           map.fitBounds(polyline.getBounds());
         } else {

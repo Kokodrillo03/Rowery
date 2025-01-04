@@ -27,10 +27,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
-import TripTile from '@/components/TripTile.vue';
 import { useAuth0 } from '@auth0/auth0-vue';
-import type { Route } from '@/types'
 import axios from 'axios';
+import {Route} from "@/types";
+import TripTile from "@/components/TripTile.vue";
 
 export default defineComponent({
   name: 'ProfileView',
@@ -47,18 +47,18 @@ export default defineComponent({
 
     const fetchUserMetadata = async () => {
       const accessToken = await getAccessTokenSilently();
-      const {data} = await axios.get('https://dev-3zf4ofit8rok4lhx.us.auth0.com/userinfo', {
+      const { data } = await axios.get('https://dev-3zf4ofit8rok4lhx.us.auth0.com/userinfo', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
       console.log(data);
       userMetadata.value = data.user_metadata;
-    }
+    };
 
     const fetchUserTrips = async () => {
       const token = await getAccessTokenSilently();
-      const userId = user.value?.sub
+      const userId = user.value?.sub;
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/trip/${userId}`, {
           method: 'GET',
@@ -87,7 +87,7 @@ export default defineComponent({
             image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
             title: 'Forest Trail',
             description: 'Discover the beauty of the forest.',
-            userImage: '://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=40',
+            userImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=40',
           },
           {
             id: 4,
