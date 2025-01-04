@@ -9,7 +9,7 @@ export class RoutingService {
 
 
 
-    getRoute(from: string, to: string, bikeType: string) {
+    async getRoute(from: string, to: string, bikeType: string) {
         const bikeTypeGraphHopperTypeMap = {
             'trekking': 'bike',
             'road': 'racingbike',
@@ -18,7 +18,7 @@ export class RoutingService {
         const baseUrl = process.env.GRAPH_HOPPER_API_URL;
         const apiKey = process.env.GRAPH_HOPPER_API_KEY;
         const graphHopperBikeType = bikeTypeGraphHopperTypeMap[bikeType];
-        return this.httpService.get(`${baseUrl}/route?point=${from}&point=${to}&vehicle=${graphHopperBikeType}&key=${apiKey}`);
-
+        const {data} = await this.httpService.get(`${baseUrl}/route?point=${from}&point=${to}&vehicle=${graphHopperBikeType}&key=${apiKey}`);
+        return data;
     }
 }

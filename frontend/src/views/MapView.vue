@@ -107,8 +107,8 @@ export default defineComponent({
         };
         const config = {
           params: {
-            point: `${fromLatLng.lat},${fromLatLng.lng}`,
-            end: `${toLatLng.lat},${toLatLng.lng}`,
+            from: `${fromLatLng.lat},${fromLatLng.lng}`,
+            to: `${toLatLng.lat},${toLatLng.lng}`,
             bikeType: selectedBikeType.value,
           },
         };
