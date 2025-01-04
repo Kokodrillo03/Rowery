@@ -129,7 +129,7 @@ Resources:
 
   Route53RecordSetBackend:
     Type: AWS::Route53::RecordSet
-    DependsOn: BackendStack
+    DependsOn: NestFunction
     Properties:
       HostedZoneId: !Ref HostedZoneId
       Name: !Sub 'api.${DomainName}'
