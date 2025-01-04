@@ -99,6 +99,11 @@ Resources:
           - !Ref DomainName
         HttpVersion: http2
         PriceClass: PriceClass_100
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponsePagePath: /index.html
+            ResponseCode: 200
+            ErrorCachingMinTTL: 300
 
   # Route 53 Record for Frontend
   Route53RecordSetFrontend:

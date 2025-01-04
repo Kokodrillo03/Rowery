@@ -7,7 +7,7 @@ export class RoutingController {
     constructor() {}
 
     @Get()
-    getRoute(@Query {from, to, bikeType}: RoutingDto) {
+    getRoute(@Query() {from, to, bikeType}: RoutingDto) {
         return this.routingService.getRoute(from, to, bikeType);
     }
 }
