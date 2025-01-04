@@ -49,7 +49,7 @@ export default defineComponent({
     const fromDestination = ref<string>('');
     const toDestination = ref<string>('');
     const selectedBikeType = ref<string>('road'); // Default bike type
-    const bikeTypes = ref<string[]>(['road', 'mountain', 'hybrid']); // Available bike types
+    const bikeTypes = ref<string[]>(['road', 'mountain', 'trekking']); // Available bike types
 
     let map: L.Map;
 

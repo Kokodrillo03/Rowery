@@ -1,4 +1,5 @@
-import {Controller, Get, Param} from "@nestjs/common";
+import {Controller, Get, Param, Query} from "@nestjs/common";
+import {RoutingDto} from "./dto/routing,dto";
 
 @Controller('routing')
 export class RoutingController {
@@ -6,7 +7,7 @@ export class RoutingController {
     constructor() {}
 
     @Get()
-    getRoute(@Param() from: string, @Param() to: string, @Param() bikeType: string) {
+    getRoute(@Query {from, to, bikeType}: RoutingDto) {
         return this.routingService.getRoute(from, to, bikeType);
     }
 }
