@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
-import HomeView from '../views/HomeView.vue';
 import { useAuth0 } from '@auth0/auth0-vue'
 
 const requireAuth = (
@@ -21,7 +20,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: () => import('../views/HomeView.vue'),
     },
     {
       path: '/about',
