@@ -34,10 +34,9 @@ async function bootstrap(): Promise<Server> {
     }),
   );
   const config = new DocumentBuilder()
-    .setTitle('Star Wars API')
-    .setDescription('The Star Wars API')
+    .setTitle('Rowerowy Dolny Slask Api')
+    .setDescription('Rowerowy Dolny Slask Api')
     .setVersion('1.0')
-    .addTag('character')
     .addServer('/Prod', 'Production')
     .build();
   const document = SwaggerModule.createDocument(app, config);
