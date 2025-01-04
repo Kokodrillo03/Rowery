@@ -286,7 +286,7 @@ Resources:
       DomainName: !Sub 'api.${DomainName}'
       EndpointConfiguration:
         Types:
-          - REGIONAL
+          - EDGE
 
   ApiMapping:
     Type: 'AWS::ApiGateway::BasePathMapping'
