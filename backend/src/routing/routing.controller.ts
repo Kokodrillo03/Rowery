@@ -8,6 +8,9 @@ export class RoutingController {
 
     @Get()
     getRoute(@Query() {from, to, bikeType}: RoutingDto) {
+        if (!from || !to || !bikeType) {
+            throw new Error('Missing parameters');
+        }
         return this.routingService.getRoute(from, to, bikeType);
     }
 }

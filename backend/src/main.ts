@@ -6,7 +6,6 @@ import { createServer, proxy } from 'aws-serverless-express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import * as express from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common'
 import { writeFile } from 'fs/promises';
 
 let cachedServer: Server;
@@ -26,13 +25,6 @@ async function bootstrap(): Promise<Server> {
     AppModule,
     new ExpressAdapter(expressApp),
   );
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
   app.enableCors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -42,7 +34,6 @@ async function bootstrap(): Promise<Server> {
     .setTitle('Rowerowy Dolny Slask Api')
     .setDescription('Rowerowy Dolny Slask Api')
     .setVersion('1.0')
-    .addServer('/Prod', 'Production')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);
