@@ -291,7 +291,7 @@ Resources:
   ApiMapping:
     Type: 'AWS::ApiGateway::BasePathMapping'
     Properties:
-      BasePath: '/'
+      BasePath: ''
       DomainName: !Ref ApiDomainName
       RestApiId: !Ref ServerlessRestApi
 

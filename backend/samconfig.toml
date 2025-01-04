@@ -5,6 +5,7 @@ resolve_s3 = true
 s3_prefix = "rowerowy-dolny-slask"
 region = "us-east-1"
 confirm_changeset = false
+fail_on_empty_changeset = false
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
 template_file = "template.yaml"
 image_repositories = []
