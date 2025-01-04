@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      APP_BUCKET_NAME:  rowerowy-dolny-slask-vue-app
+      APP_BUCKET_NAME: rowerowy-dolny-slask-vue-app
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
 
     steps:
       - name: Checkout repository
@@ -50,12 +51,24 @@ jobs:
           "DocumentDBPassword=${{ secrets.DOCUMENT_DB_PASSWORD }}
           GraphHopperApiKey=${{ secrets.GRAPH_HOPPER_API_KEY }}
           AppBucketName=$APP_BUCKET_NAME"
-          
 
-      - name: Upload Frontend to S3
+      - name: Delete Existing Contents from S3 Bucket
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          
-          aws s3 sync ./frontend/dist s3://$APP_BUCKET_NAME
+          aws s3 rm s3://$APP_BUCKET_NAME --recursive
+
+      - name: Upload New Frontend to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws s3 cp ./frontend/dist s3://$APP_BUCKET_NAME --recursive
+
+      - name: Invalidate CloudFront Cache
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws cloudfront create-invalidation --distribution-id E4VCYO15GOT7P --paths "/*"
