@@ -136,7 +136,7 @@ Resources:
       Type: CNAME
       TTL: '60'
       ResourceRecords:
-        - !GetAtt BackendStack.Outputs.ApiEndpoint
+        - !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
 
   MyVPC:
     Type: AWS::EC2::VPC
