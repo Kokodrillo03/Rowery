@@ -285,17 +285,6 @@ Resources:
         Route53:
           HostedZoneId: !Ref HostedZoneId
 
-  Route53RecordSetBackend:
-    Type: AWS::Route53::RecordSet
-    DependsOn: NestFunction
-    Properties:
-      HostedZoneId: !Ref HostedZoneId
-      Name: !Sub 'api.${DomainName}'
-      Type: A
-      AliasTarget:
-        DNSName: !GetAtt RestApi.DomainNameConfiguration.DistributionDomainName
-        HostedZoneId: Z2FDTNDATAQYW2
-
   NestFunction:
     Type: AWS::Serverless::Function
     Properties:
