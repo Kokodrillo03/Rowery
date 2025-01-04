@@ -283,7 +283,7 @@ Resources:
       Domain:
         DomainName: !Sub 'api.${DomainName}'
         CertificateArn: arn:aws:acm:us-east-1:586799309278:certificate/05e0b124-468b-4f1e-bff7-a66ce7de5647
-        EndpointConfiguration: regional
+        EndpointConfiguration: REGIONAL
         Route53:
           HostedZoneId: !Ref HostedZoneId
 
