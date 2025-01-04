@@ -120,7 +120,7 @@ export default defineComponent({
           config
         );
 
-        const routeData = routeResponse;
+        const routeData = routeResponse.data;
         console.log(routeData);
         if (routeData && routeData.routes && routeData.routes[0]) {
           const routeCoordinates = routeData.routes[0].geometry.coordinates.map(

@@ -64,6 +64,6 @@ const logoutUser = () => {
 };
 
 onMounted(() => {
-  console.log(user.value.picture);
+  console.log(user?.value?.picture);
 });
 </script>

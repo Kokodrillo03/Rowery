@@ -27,7 +27,6 @@ import { defineComponent, ref, onMounted } from 'vue';
 import TripTile from '@/components/TripTile.vue';
 import type { Route } from '@/types'
 import { useAuth0 } from '@auth0/auth0-vue'
-import {apiUrl} from "@/util";
 
 export default defineComponent({
   name: 'RoutesListView',
