@@ -50,6 +50,12 @@ Resources:
               Service: cloudfront.amazonaws.com
             Action: "s3:GetObject"
             Resource: !Sub "arn:aws:s3:::rowerowy-dolny-slask-vue-app/*"
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOriginAccessId.S3CanonicalUserId
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${AppBucketName}/*"
 
 
   # CloudFront Origin Access Identity
