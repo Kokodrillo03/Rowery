@@ -53,6 +53,7 @@ export default defineComponent({
     const bikeTypes = ref<string[]>(['road', 'mountain', 'trekking']); // Available bike types
 
     let map: L.Map;
+    let routeLayers: L.LayerGroup;
 
     const initializeMap = () => {
       map = L.map('map').setView([51.1079, 17.0385], 10);
@@ -106,6 +107,10 @@ export default defineComponent({
           lat: parseFloat(toResponse.data[0].lat),
           lng: parseFloat(toResponse.data[0].lon),
         };
+        const wayPoints = [
+          `${fromLatLng.lat},${fromLatLng.lng}`,
+          `${toLatLng.lat},${toLatLng.lng}`,
+        ]
         const config = {
           params: {
             from: `${fromLatLng.lat},${fromLatLng.lng}`,
@@ -124,10 +129,18 @@ export default defineComponent({
         const routeData = routeResponse.data;
         console.log(routeData);
         if (routeData) {
-          const routeCoordinates = routeData.points.map(
+          const routeCoordinates = routeData.points.coordinates.map(
             (coord: number[]) => [coord[1], coord[0]]
           )
-          const polyline = L.polyline(routeCoordinates, { color: 'blue' }).addTo(map);
+          if (routeLayers) {
+            routeLayers.clearLayers();
+          }
+          const polyline = L.polyline(routeCoordinates, { color: 'blue' });
+          const startCords = routeCoordinates[0] as LatLngExpression;
+          const endCords = routeCoordinates[routeCoordinates.length - 1] as LatLngExpression;
+          const startMarker = L.marker(startCords);
+          const endMarker = L.marker(endCords);
+          routeLayers = L.layerGroup([polyline, startMarker, endMarker]).addTo(map);
           map.fitBounds(polyline.getBounds());
         } else {
           alert('Route not found');
