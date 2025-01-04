@@ -19,8 +19,13 @@ export class RoutingService {
         const baseUrl = process.env.GRAPH_HOPPER_API_URL;
         const apiKey = process.env.GRAPH_HOPPER_API_KEY;
         const graphHopperBikeType = bikeTypeGraphHopperTypeMap[bikeType];
-        const response = await firstValueFrom(this.httpService.get(`${baseUrl}/route?point=${from}&point=${to}&vehicle=${graphHopperBikeType}&key=${apiKey}`).pipe());
-        console.log(response)
-        return response.data;
+        try {
+            const response = await firstValueFrom(this.httpService.get(`${baseUrl}/route?point=${from}&point=${to}&vehicle=${graphHopperBikeType}&key=${apiKey}`).pipe());
+            console.log(response)
+            return response.data;
+        } catch (e) {
+            console.log(e);
+            throw new Error('Error while fetching route');
+        }
     }
 }
