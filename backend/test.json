@@ -1,0 +1,29 @@
+{
+  "Version": "2008-10-17",
+  "Id": "PolicyForCloudFrontPrivateContent",
+  "Statement": [
+    {
+      "Sid": "AllowCloudFrontServicePrincipal",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+      },
+      "Action": "*",
+      "Resource": "arn:aws:s3:::rowerowy-dolny-slask-vue-app/*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "*"
+        }
+      }
+    },
+    {
+      "Sid": "2",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity EIK31JC65R78O"
+      },
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::rowerowy-dolny-slask-vue-app/*"
+    }
+  ]
+}
