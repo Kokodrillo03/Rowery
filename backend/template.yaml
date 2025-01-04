@@ -383,9 +383,6 @@ Resources:
           CidrIp: 0.0.0.0/0
 
 Outputs:
-  ApiEndpoint:
-    Description: 'API Gateway endpoint URL for the  function'
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
   WebsiteURL:
     Description: The CloudFront URL of the frontend website.
     Value: !GetAtt CloudFrontDistribution.DomainName
