@@ -267,6 +267,36 @@ Resources:
       Description: 'The password for the DocumentDB admin user'
       SecretString: !Ref DocumentDBPassword
 
+  RestApi:
+    Type: 'AWS::Serverless::Api'
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowHeaders:
+          - Content-Type
+          - X-Amz-Date
+          - Authorization
+          - X-Api-Key
+        AllowOrigin: "'*'"
+        AllowMethods: "'OPTIONS,GET,POST,PUT,DELETE'"
+      EndpointConfiguration: regional
+      Domain:
+        DomainName: !Sub 'api.${DomainName}'
+        CertificateArn: arn:aws:acm:us-east-1:586799309278:certificate/05e0b124-468b-4f1e-bff7-a66ce7de5647
+        EndpointConfiguration: regional
+        Route53:
+          HostedZoneId: !Ref HostedZoneId
+
+  Route53RecordSetBackend:
+    Type: AWS::Route53::RecordSet
+    DependsOn: NestFunction
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub 'api.${DomainName}'
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt RestApi.DomainNameConfiguration.DistributionDomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # Fixed CloudFront Hosted Zone ID
 
 
   NestFunction:
@@ -308,6 +338,7 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
+            RestApiId: !Ref RestApi
 
   DocumentDBSubnetGroup:
     Type: AWS::DocDB::DBSubnetGroup
