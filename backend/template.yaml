@@ -294,7 +294,6 @@ Resources:
       BasePath: '/'
       DomainName: !Ref ApiDomainName
       RestApiId: !Ref ServerlessRestApi
-      StageName: Prod
 
   RecordSetId:
     Type: AWS::Route53::RecordSet
