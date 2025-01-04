@@ -27,6 +27,7 @@ import { defineComponent, ref, onMounted } from 'vue';
 import TripTile from '@/components/TripTile.vue';
 import type { Route } from '@/types'
 import { useAuth0 } from '@auth0/auth0-vue'
+import {apiUrl} from "@/util";
 
 export default defineComponent({
   name: 'RoutesListView',
@@ -39,12 +40,8 @@ export default defineComponent({
 
     const fetchRoutes = async () => {
       try {
-        const token = await getAccessTokenSilently();
-        const response = await fetch(`http://localhost:3000/trip`, {
+        const response = await fetch(`${apiUrl}trip`, {
           method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         });
         trips.value = await response.json();
       } catch (error) {

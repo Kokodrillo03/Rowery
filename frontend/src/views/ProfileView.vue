@@ -31,6 +31,7 @@ import TripTile from '@/components/TripTile.vue';
 import { useAuth0 } from '@auth0/auth0-vue';
 import type { Route } from '@/types'
 import axios from 'axios';
+import {apiUrl} from "@/util";
 
 export default defineComponent({
   name: 'ProfileView',
@@ -60,7 +61,7 @@ export default defineComponent({
       const token = await getAccessTokenSilently();
       const userId = user.value?.sub
       try {
-        const response = await fetch(`http://localhost:3000/trip/${userId}`, {
+        const response = await fetch(`${apiUrl}/trip/${userId}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,

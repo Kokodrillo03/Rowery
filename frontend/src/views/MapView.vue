@@ -40,6 +40,7 @@ import { defineComponent, onMounted, ref } from 'vue';
 import * as L from 'leaflet';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css'
+import {apiUrl} from "@/util";
 
 
 export default defineComponent({
@@ -107,7 +108,7 @@ export default defineComponent({
         };
 
         const routeResponse = await axios.get(
-          `https://api.rowerowydolnyslask.pl/route`,
+          `${apiUrl}/route`,
           {
             params: {
               start: `${fromLatLng.lat},${fromLatLng.lng}`,
