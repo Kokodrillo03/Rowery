@@ -308,7 +308,6 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
-            RestApiId: !Ref ServerlessRestApi
 
   DocumentDBSubnetGroup:
     Type: AWS::DocDB::DBSubnetGroup
