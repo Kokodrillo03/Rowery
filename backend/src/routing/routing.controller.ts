@@ -8,6 +8,7 @@ export class RoutingController {
 
     @Get()
     getRoute(@Query() query: RoutingDto) {
+        console.log(query);
         const {from, to, bikeType} = query;
         if (!from || !to || !bikeType) {
             throw new Error('Missing parameters');

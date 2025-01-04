@@ -40,7 +40,6 @@ import { defineComponent, onMounted, ref } from 'vue';
 import * as L from 'leaflet';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css'
-import {apiUrl} from "@/util";
 
 
 export default defineComponent({
@@ -106,20 +105,23 @@ export default defineComponent({
           lat: parseFloat(toResponse.data[0].lat),
           lng: parseFloat(toResponse.data[0].lon),
         };
+        const config = {
+          params: {
+            point: `${fromLatLng.lat},${fromLatLng.lng}`,
+            end: `${toLatLng.lat},${toLatLng.lng}`,
+            bikeType: selectedBikeType.value,
+          },
+        };
+
+        console.log(config)
 
         const routeResponse = await axios.get(
-          `${apiUrl}/route`,
-          {
-            params: {
-              start: `${fromLatLng.lat},${fromLatLng.lng}`,
-              end: `${toLatLng.lat},${toLatLng.lng}`,
-              bikeType: selectedBikeType.value,
-            },
-          }
+          `${import.meta.env.VITE_APP_API_URL}/routing`,
+          config
         );
 
-        const routeData = routeResponse.data;
-
+        const routeData = routeResponse;
+        console.log(routeData);
         if (routeData && routeData.routes && routeData.routes[0]) {
           const routeCoordinates = routeData.routes[0].geometry.coordinates.map(
             (coord: number[]) => [coord[1], coord[0]]
