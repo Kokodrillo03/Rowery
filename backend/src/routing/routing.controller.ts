@@ -7,7 +7,8 @@ export class RoutingController {
     constructor(private readonly routingService: RoutingService) {}
 
     @Get()
-    getRoute(@Query() {from, to, bikeType}: RoutingDto) {
+    getRoute(@Query() query: RoutingDto) {
+        const {from, to, bikeType} = query;
         if (!from || !to || !bikeType) {
             throw new Error('Missing parameters');
         }
