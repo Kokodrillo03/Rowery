@@ -67,7 +67,7 @@ export default defineComponent({
             Authorization: `Bearer ${token}`,
           },
         });
-        trips.value = await response.json();
+        trips.value = await response.data;
       } catch (e) {
         console.error('Error fetching user trips:', e);
         trips.value = [
