@@ -4,4 +4,5 @@ export class CreateTripDto {
     userId: string;
     username: string;
     userImage: string;
+    imgContentType: string;
 }

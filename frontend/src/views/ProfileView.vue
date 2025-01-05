@@ -88,7 +88,10 @@ export default defineComponent({
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          params: { userId }
+          params: {
+            userId,
+            imgContentType: file.type,
+          }
         });
         const { uploadUrl, s3Url } = response.data;
 

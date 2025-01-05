@@ -327,7 +327,8 @@ export default defineComponent({
           username: user.value?.name,
           userImage: user.value?.picture,
           wayPoints: allLatLon.map(latLon => [latLon.lat, latLon.lng]),
-          route: routeCoordinates
+          route: routeCoordinates,
+          imgContentType: coverImage.value.type
         };
 
         const token = await getAccessTokenSilently();

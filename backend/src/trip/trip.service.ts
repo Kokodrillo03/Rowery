@@ -26,18 +26,18 @@ export class TripService {
             });
 
             const s3Params = {
-                Bucket: process.env.ASSETS_BUCKET, // Your bucket name
-                Key: `trips/${savedTrip._id.toString()}/image`, // File path in bucket
-                Expires: 60 * 5, // URL expiry time in seconds
+                Bucket: process.env.ASSETS_BUCKET,
+                Key: `trips/${savedTrip._id.toString()}/image`,
+                Expires: 60 * 5,
+                ContentType: createTripDto.imgContentType,
             };
 
             const uploadUrl = await s3.getSignedUrlPromise('putObject', s3Params);
 
-            const imageUrl = `https://${s3Params.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${s3Params.Key}`;
+            const imageUrl = `https://s3.us-east-1.amazonaws.com/${s3Params.Bucket}/${s3Params.Key}`;
             await this.tripModel.findByIdAndUpdate(
               savedTrip._id,
-              { image: imageUrl },
-              { new: true },
+              { image: imageUrl }
             );
 
             return {
