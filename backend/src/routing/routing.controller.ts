@@ -8,10 +8,10 @@ export class RoutingController {
 
     @Get()
     getRoute(@Query() query: RoutingDto) {
-        const {from, to, bikeType} = query;
-        if (!from || !to || !bikeType) {
+        const {waypoints, bikeType} = query;
+        if (!waypoints || !bikeType) {
             throw new Error('Missing parameters');
         }
-        return this.routingService.getRoute(from, to, bikeType);
+        return this.routingService.getRoute(waypoints, bikeType);
     }
 }

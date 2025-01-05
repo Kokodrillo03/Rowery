@@ -1,5 +1,4 @@
 export class RoutingDto {
-    from: string;
-    to: string;
+    waypoints: string[];
     bikeType: string;
 }

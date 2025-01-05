@@ -10,10 +10,11 @@
     <div class="my-5">
       <h2 class="text-center mb-4">Dlaczego warto wybrać naszą aplikację?</h2>
       <div class="row">
-        <div class="col-md-3 text-center mb-4" v-for="feature in features" :key="feature.title">
-          <img :src="feature.icon" alt="Ikona funkcji" class="mb-3" />
-          <h5>{{ feature.title }}</h5>
-          <p class="text-muted">{{ feature.description }}</p>
+        <div class="col-md-3 mb-4" v-for="feature in features" :key="feature.title">
+          <div class="feature-card p-3 h-100 d-flex flex-column justify-content-center align-items-center text-center">
+            <h5>{{ feature.title }}</h5>
+            <p class="text-muted">{{ feature.description }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -22,9 +23,11 @@
     <div class="my-5">
       <h2 class="text-center mb-4">Jak to działa</h2>
       <div class="row">
-        <div class="col-md-3 text-center mb-4" v-for="(step, index) in steps" :key="index">
-          <h5>{{ step.number }}. {{ step.title }}</h5>
-          <p class="text-muted">{{ step.description }}</p>
+        <div class="col-md-3 mb-4" v-for="(step, index) in steps" :key="index">
+          <div class="step-card p-3 h-100 d-flex flex-column justify-content-center align-items-center text-center">
+            <h5>{{ step.number }}. {{ step.title }}</h5>
+            <p class="text-muted">{{ step.description }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -37,7 +40,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -45,10 +48,10 @@ export default defineComponent({
   setup() {
     return {
       features: [
-        { icon: 'feature-1.png', title: 'Przyjazna nawigacja', description: 'Łatwo planuj swoje trasy dzięki intuicyjnemu interfejsowi.' },
-        { icon: 'feature-2.png', title: 'Współdzielenie w czasie rzeczywistym', description: 'Dziel się swoimi planami podróży z przyjaciółmi i rodziną w każdej chwili.' },
-        { icon: 'feature-3.png', title: 'Odkrywaj lokalne perełki', description: 'Znajdź ukryte miejsca i popularne atrakcje Dolnego Śląska.' },
-        { icon: 'feature-4.png', title: 'Społeczność podróżników', description: 'Dołącz do społeczności podróżników dzielących się doświadczeniami i poradami.' }
+        { title: 'Przyjazna nawigacja', description: 'Łatwo planuj swoje trasy dzięki intuicyjnemu interfejsowi.' },
+        { title: 'Współdzielenie w czasie rzeczywistym', description: 'Dziel się swoimi planami podróży z przyjaciółmi i rodziną w każdej chwili.' },
+        { title: 'Odkrywaj lokalne perełki', description: 'Znajdź ukryte miejsca i popularne atrakcje Dolnego Śląska.' },
+        { title: 'Społeczność podróżników', description: 'Dołącz do społeczności podróżników dzielących się doświadczeniami i poradami.' }
       ],
       steps: [
         { number: 1, title: 'Rozpocznij planowanie', description: 'Otwórz aplikację w swojej przeglądarce i zacznij planować podróż.' },
@@ -72,5 +75,10 @@ h1, h2, h5, p {
 
 .text-muted {
   font-size: 0.9rem;
+}
+
+.feature-card, .step-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
 }
 </style>
