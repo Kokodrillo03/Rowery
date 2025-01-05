@@ -1,16 +1,16 @@
 <template>
   <div>
     <div v-if="trip">
-      <h1>{{ trip.title }}</h1>
+      <h1>{{ trip?.title }}</h1>
       <div class="trip-details">
-        <img :src="trip.image" alt="Trip Cover" class="trip-cover" />
+        <img :src="trip?.image" alt="Trip Cover" class="trip-cover" />
 
         <div class="profile-header">
-          <img :src="trip.userImage" alt="User Picture" class="profile-picture-sm" />
-          <span class="profile-username">{{ trip.username }}</span>
+          <img :src="trip?.userImage" alt="User Picture" class="profile-picture-sm" />
+          <span class="profile-username">{{ trip?.username }}</span>
         </div>
 
-        <p class="text-muted">{{ trip.description }}</p>
+        <p class="text-muted">{{ trip?.description }}</p>
       </div>
 
     </div>
@@ -24,6 +24,7 @@ import { defineComponent, onMounted, ref } from 'vue';
 import axios from 'axios';
 import L, { LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css';
+import { Route } from '@/types'
 
 export default defineComponent({
   name: 'SingleTripView',
@@ -34,7 +35,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const trip = ref(null);
+    const trip = ref<Route>();
 
     const fetchTripDetails = async () => {
       try {
@@ -42,6 +43,7 @@ export default defineComponent({
         trip.value = response.data;
       } catch (error) {
         trip.value = {
+          id: 0,
           title: 'Trip not found',
           description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
           username: 'Krzysztofek',
@@ -176,7 +178,6 @@ export default defineComponent({
         doubleClickZoom: false,
         boxZoom: false,
         keyboard: false,
-        tap: false,
         touchZoom: false
       }).setView([51.1079, 17.0385], 10);
 

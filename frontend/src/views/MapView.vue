@@ -141,10 +141,10 @@ export default defineComponent({
     });
     let map: L.Map;
     let routeLayers: L.LayerGroup;
-    let routeCoordinates: number[][] = [];
+    let routeCoordinates: [number, number][] = [];
     let allLatLon: { lat: number; lng: number }[] = [];
 
-    const {  isAuthenticated, user } = useAuth0();
+    const {  isAuthenticated, user, getAccessTokenSilently } = useAuth0();
 
     const isRouteDisplayed = ref<boolean>(false);
     const showShareDialog = ref<boolean>(false);
@@ -230,7 +230,7 @@ export default defineComponent({
 
         allLatLon = [
           fromLatLng,
-          ...waypointLatLngs.filter(Boolean),
+          ...waypointLatLngs.filter((latLng) => !!latLng),
           toLatLng,
         ];
 
@@ -323,9 +323,9 @@ export default defineComponent({
         const tripDto = {
           title: routeTitle.value,
           description: routeDescription.value,
-          userId: user.value.sub,
-          username: user.value.name,
-          userImage: user.value.picture,
+          userId: user.value?.sub,
+          username: user.value?.name,
+          userImage: user.value?.picture,
           wayPoints: allLatLon.map(latLon => [latLon.lat, latLon.lng]),
           route: routeCoordinates
         };

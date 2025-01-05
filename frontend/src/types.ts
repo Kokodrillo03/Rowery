@@ -5,4 +5,6 @@ export interface Route {
   description: string
   username?: string
   userImage?: string
+  wayPoints?: number[][]
+  route?: number[][]
 }
