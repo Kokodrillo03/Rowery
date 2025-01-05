@@ -329,7 +329,7 @@ Resources:
                 - s3:PutObject
                 - s3:GetObject
                 - s3:DeleteObject
-              Resource: !Sub "arn:aws:s3:::${DomainName}-user-assets/*"
+              Resource: !Sub "arn:aws:s3:::${DomainName}-assets/*"
       Environment:
         Variables:
           NODE_ENV: production
