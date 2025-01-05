@@ -39,7 +39,7 @@ Resources:
   AssetsBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${DomainName}-user-assets'
+      BucketName: !Sub '${DomainName}-assets'
       AccessControl: Private
 
   AssetsBucketPolicy:
@@ -49,12 +49,11 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Sid: AllowPublicRead
+          - Sid: PublicReadGetObject
             Effect: Allow
-            Principal:
-              AWS: !GetAtt NestFunction.Arn
-            Action: "*"
-            Resource: !Sub "arn:aws:s3:::${AssetsBucket}/*"
+            Principal: "*"
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${DomainName}-assets/*"
 
   # S3 Bucket Policy for CloudFront Access
   BucketPolicy:
@@ -317,6 +316,16 @@ Resources:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Ref MongoPasswordSecret
         - AWSLambdaVPCAccessExecutionRole
+        - PolicyName: S3AccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:DeleteObject
+                Resource: !Sub "arn:aws:s3:::${DomainName}-assets/*"
       Environment:
         Variables:
           NODE_ENV: production
