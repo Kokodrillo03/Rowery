@@ -39,7 +39,7 @@ export default defineComponent({
 
     const fetchTripDetails = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/trips/${props.tripId}`);
+        const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/trip/${props.tripId}`);
         trip.value = response.data;
       } catch (error) {
         trip.value = {

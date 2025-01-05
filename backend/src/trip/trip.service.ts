@@ -6,6 +6,7 @@ import { UpdateTripDto } from './dto/updateTrip.dto';
 import { CreateTripDto } from './dto/createTrip.dto';
 import * as AWS from 'aws-sdk';
 import { GetUsersTripDto } from './dto/getUsersTrip.dto';
+import { GetTripDto } from './dto/getTrip.dto';
 
 @Injectable()
 export class TripService {
@@ -54,8 +55,8 @@ export class TripService {
         return updatedTrip;
     }
 
-    async getTrip(id: string): Promise<TripEntity> {
-        return await this.tripModel.findById(id);
+    async getTrip(getTripDto: GetTripDto): Promise<TripEntity> {
+        return await this.tripModel.findById(getTripDto.id);
     }
 
     async getUsersTrips(getUsersTripDto: GetUsersTripDto): Promise<TripEntity[]> {
