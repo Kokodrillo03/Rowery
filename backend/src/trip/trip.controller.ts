@@ -3,6 +3,7 @@ import { TripService } from './trip.service';
 import { CreateTripDto } from './dto/createTrip.dto';
 import { Param } from '@nestjs/common';
 import { UpdateTripDto } from './dto/updateTrip.dto';
+import { GetUsersTripDto } from './dto/getUsersTrip.dto';
 
 @Controller('trip')
 export class TripController {
@@ -19,7 +20,7 @@ export class TripController {
     }
 
     @Get('/user/:userId')
-    getUsersTrips(@Param() userId: string) {
+    getUsersTrips(@Param() userId: GetUsersTripDto) {
         return this.tripService.getUsersTrips(userId);
     }
 
