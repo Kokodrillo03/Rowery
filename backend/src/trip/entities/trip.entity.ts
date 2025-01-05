@@ -9,8 +9,6 @@ export interface Trip {
   title: string;
   description: string
   userId: string;
-  username: string;
-  userImage: string;
 }
 
 
@@ -44,15 +42,15 @@ export class TripEntity implements Trip {
 
     @Prop({
         required: false,
-        default: ''
+        default: []
     })
-    username: string;
+    wayPoints: number[][];
 
     @Prop({
         required: false,
-        default: ''
+        default: []
     })
-    userImage: string;
+    route: number[][];
 }
 
 export const TripSchema = SchemaFactory.createForClass(TripEntity);

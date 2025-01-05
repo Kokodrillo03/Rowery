@@ -1,9 +1,9 @@
 <template>
   <div class="container py-4">
-    <h2 class="mb-4">Shared Routes</h2>
+    <h2 class="mb-4">Trasy społeczności</h2>
     <div v-if="loading" class="text-center py-5">
       <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">Ładowanie...</span>
       </div>
     </div>
     <div v-else class="row g-4">
@@ -27,6 +27,7 @@ import { defineComponent, ref, onMounted } from 'vue';
 import TripTile from '@/components/TripTile.vue';
 import type { Route } from '@/types'
 import { useAuth0 } from '@auth0/auth0-vue'
+import axios from 'axios';
 
 export default defineComponent({
   name: 'RoutesListView',
@@ -39,10 +40,8 @@ export default defineComponent({
 
     const fetchRoutes = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/trip`, {
-          method: 'GET',
-        });
-        trips.value = await response.json();
+        const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/trip`);
+        trips.value = await response.data;
       } catch (error) {
         console.error(error);
         trips.value = [

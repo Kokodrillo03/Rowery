@@ -36,6 +36,26 @@ Resources:
             AllowedMethods: [ "GET", "HEAD" ]
             AllowedOrigins: [ "*" ]
 
+  AssetsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${DomainName}-user-assets'
+      AccessControl: Private
+
+  AssetsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AssetsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowPublicRead
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt NestFunction.Arn
+            Action: "*"
+            Resource: !Sub "arn:aws:s3:::${AssetsBucket}/*"
+
   # S3 Bucket Policy for CloudFront Access
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -312,6 +332,7 @@ Resources:
           GRAPH_HOPPER_API_KEY: !Ref GraphHopperApiKey
           AUTH0_ISSUER_URL: 'https://dev-3zf4ofit8rok4lhx.us.auth0.com/'
           AUTH0_AUDIENCE: 'https://api.rowerowydolnyslask'
+          ASSETS_BUCKET: !Ref AssetsBucket
       VpcConfig:
         SecurityGroupIds:
           - !GetAtt DocumentDBSecurityGroup.GroupId
