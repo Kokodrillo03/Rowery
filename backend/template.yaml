@@ -46,6 +46,13 @@ Resources:
         RestrictPublicBuckets: false
       BucketName: !Sub '${DomainName}-assets'
       AccessControl: Private
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ["*"]
+            AllowedMethods: ["GET", "POST", "PUT", "DELETE", "HEAD"]
+            AllowedOrigins: ["*"]
+            ExposeHeaders: ["ETag", "x-amz-meta-custom-header"]
+            MaxAge: 3000
 
   AssetsBucketPolicy:
     Type: AWS::S3::BucketPolicy

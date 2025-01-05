@@ -21,7 +21,7 @@ import { useRouter } from 'vue-router';
 export default defineComponent({
   name: 'TripTile',
   props: {
-    _id: { type: Number, required: true },
+    _id: { type: String, required: true },
     image: { type: String, required: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
