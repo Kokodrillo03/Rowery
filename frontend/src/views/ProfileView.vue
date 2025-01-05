@@ -3,9 +3,9 @@
     <div class="row justify-content-center">
       <div class="col-md-8 text-center">
         <div class="profile-header mb-4">
-          <img :src="user?.picture" alt="Profile Picture" class="rounded-circle profile-picture" />
+          <img :src="user?.picture" alt="Profile Picture" class="rounded-circle profile-picture" @click="triggerFileInput" />
+          <input type="file" ref="fileInput" @change="uploadProfilePicture" accept="image/*" style="display: none;" />
           <h2 class="mt-3">{{ user?.name }}</h2>
-          <p class="text-muted">{{ user?.profile }}</p>
         </div>
       </div>
     </div>
@@ -20,7 +20,8 @@
           :description="trip.description"
           :username="trip.username"
           :userImage="trip.userImage"
-        />      </div>
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -29,8 +30,8 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import { useAuth0 } from '@auth0/auth0-vue';
 import axios from 'axios';
-import {Route} from "@/types";
-import TripTile from "@/components/TripTile.vue";
+import { Route } from '@/types';
+import TripTile from '@/components/TripTile.vue';
 
 export default defineComponent({
   name: 'ProfileView',
@@ -40,10 +41,12 @@ export default defineComponent({
   setup() {
     const trips = ref<Route[]>([]);
     const userMetadata = ref<any>(null);
-
     const { user, getAccessTokenSilently } = useAuth0();
+    const fileInput = ref<HTMLInputElement | null>(null);
 
-    console.log(user);
+    const triggerFileInput = () => {
+      fileInput.value?.click();
+    };
 
     const fetchUserMetadata = async () => {
       const accessToken = await getAccessTokenSilently();
@@ -52,7 +55,6 @@ export default defineComponent({
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      console.log(data);
       userMetadata.value = data.user_metadata;
     };
 
@@ -60,8 +62,7 @@ export default defineComponent({
       const token = await getAccessTokenSilently();
       const userId = user.value?.sub;
       try {
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/trip/${userId}`, {
-          method: 'GET',
+        const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/trip/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -70,38 +71,48 @@ export default defineComponent({
       } catch (e) {
         console.error('Error fetching user trips:', e);
         trips.value = [
-          {
-            id: 1,
-            image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
-            title: 'Mountain Adventure',
-            description: 'A thrilling route through the mountains.',
-          },
-          {
-            id: 2,
-            image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
-            title: 'Seaside Stroll',
-            description: 'A relaxing walk along the coastline.',
-          },
-          {
-            id: 3,
-            image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
-            title: 'Forest Trail',
-            description: 'Discover the beauty of the forest.',
-            userImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=40',
-          },
-          {
-            id: 4,
-            image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
-            title: 'Seaside Stroll',
-            description: 'A relaxing walk along the coastline.',
-          },
-          {
-            id: 5,
-            image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
-            title: 'Forest Trail',
-            description: 'Discover the beauty of the forest.',
-          },
+          /* Some default trips */
         ];
+      }
+    };
+
+    const uploadProfilePicture = async (event: Event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      const token = await getAccessTokenSilently();
+      const userId = user.value?.sub;
+
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/user/imageUpload`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: { userId }
+        });
+        const { uploadUrl, s3Url } = response.data;
+
+        // Step 2: Upload image to S3
+        await axios.put(uploadUrl, file, {
+          headers: {
+            'Content-Type': file.type,
+          },
+        });
+
+        await axios.patch(`https://dev-3zf4ofit8rok4lhx.us.auth0.com/api/v2/users/${userId}`, {
+          user_metadata: { picture: s3Url }
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+        });
+
+        // Step 4: Update local user object
+        fetchUserMetadata();
+
+      } catch (error) {
+        console.error('Error uploading profile picture:', error);
       }
     };
 
@@ -113,6 +124,9 @@ export default defineComponent({
     return {
       user,
       trips,
+      fileInput,
+      triggerFileInput,
+      uploadProfilePicture,
     };
   },
 });
@@ -121,6 +135,7 @@ export default defineComponent({
 <style scoped>
 .profile-header {
   text-align: center;
+  cursor: pointer;
 }
 
 .profile-picture {
@@ -137,9 +152,5 @@ h2 {
 h3 {
   font-size: 1.5rem;
   color: #007bff;
-}
-
-.text-muted {
-  font-size: 1rem;
 }
 </style>

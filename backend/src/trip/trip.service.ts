@@ -20,7 +20,7 @@ export class TripService {
 
             // Configure AWS S3 client
             const s3 = new AWS.S3({
-                region: process.env.AWS_REGION,
+                region: 'us-east-1',
             });
 
             // Generate a pre-signed URL for the trip image upload

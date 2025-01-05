@@ -28,6 +28,7 @@ async function bootstrap(): Promise<Server> {
   app.enableCors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: '*',
     credentials: true,
   });
   const config = new DocumentBuilder()
