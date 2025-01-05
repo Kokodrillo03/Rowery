@@ -39,6 +39,11 @@ Resources:
   AssetsBucket:
     Type: AWS::S3::Bucket
     Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
       BucketName: !Sub '${DomainName}-assets'
       AccessControl: Private
 
