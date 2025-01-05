@@ -315,8 +315,8 @@ export default defineComponent({
 
     const shareRoute = async () => {
       try {
-        if (!coverImage.value) {
-          alert('Please select an image to upload.');
+        if (!coverImage.value || !routeTitle.value || !routeDescription.value) {
+          alert('Wypelnij wszystkie pola');
           return;
         }
 
@@ -331,10 +331,14 @@ export default defineComponent({
         };
 
         const token = await getAccessTokenSilently();
-
         const { data } = await axios.post(
           `${import.meta.env.VITE_APP_API_URL}/trip`,
           tripDto,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
         );
 
         const uploadUrl = data.uploadUrl;

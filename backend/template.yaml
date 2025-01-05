@@ -296,15 +296,10 @@ Resources:
     Properties:
       StageName: Prod
       Cors:
-        AllowHeaders:
-          - Content-Type
-          - X-Amz-Date
-          - Authorization
-          - authorization
-          - X-Api-Key
-          - content-type
+        AllowHeaders: "'*'"
         AllowOrigin: "'*'"
         AllowMethods: "'OPTIONS,GET,POST,PUT,DELETE'"
+        AllowCredentials: "'true'"
       Domain:
         DomainName: !Sub 'api.${DomainName}'
         CertificateArn: arn:aws:acm:us-east-1:586799309278:certificate/05e0b124-468b-4f1e-bff7-a66ce7de5647
