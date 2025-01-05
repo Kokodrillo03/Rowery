@@ -29,6 +29,7 @@ async function bootstrap(): Promise<Server> {
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: '*',
+    exposedHeaders: '*',
     credentials: true,
   });
   const config = new DocumentBuilder()

@@ -335,11 +335,6 @@ export default defineComponent({
         const { data } = await axios.post(
           `${import.meta.env.VITE_APP_API_URL}/trip`,
           tripDto,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
         );
 
         const uploadUrl = data.uploadUrl;
