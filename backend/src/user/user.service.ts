@@ -15,7 +15,7 @@ export class UserService {
 
         // Generate a pre-signed URL for the trip image upload
         const s3Params = {
-            Bucket: process.env.ASSETS_BUCKET_NAME, // Your bucket name
+            Bucket: process.env.ASSETS_BUCKET, // Your bucket name
             Key: `users/${addUserImageDto.id.toString()}/image`, // File path in bucket
             Expires: 60 * 5, // URL expiry time in seconds
             ContentType: 'image/*', // Expected content type
