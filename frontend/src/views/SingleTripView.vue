@@ -185,7 +185,7 @@ export default defineComponent({
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
       if (trip.value?.route) {
-        const latLngs = trip.value.route.map(cords => [cords[1], cords[0]]) as LatLngExpression[]
+        const latLngs = trip.value.route as LatLngExpression[]
         console.log(latLngs)
         const polyline = L.polyline(latLngs, { color: 'blue' }).addTo(map);
         const wayPoints = trip.value.wayPoints as LatLngExpression[]
