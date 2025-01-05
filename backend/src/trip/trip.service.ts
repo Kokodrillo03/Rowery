@@ -44,6 +44,7 @@ export class TripService {
                 uploadUrl
             };
         } catch (error) {
+            console.log(error)
             throw new Error('Error creating trip and generating upload URL');
         }
     }
