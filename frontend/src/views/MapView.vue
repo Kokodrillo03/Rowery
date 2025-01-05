@@ -103,6 +103,10 @@ export default defineComponent({
 
     const searchRoute = async () => {
       try {
+        if(!fromDestination.value || !toDestination.value) {
+          alert('Podaj miejsce początkowe i końcowe');
+          return;
+        }
         const fromResponse = await axios.get(`https://nominatim.openstreetmap.org/search`, {
           params: {
             q: fromDestination.value,
@@ -179,7 +183,7 @@ export default defineComponent({
 
         const config = {
           params: {
-            waypoints: wayPoints,
+            waypoints: wayPoints.join(';'),
             bikeType: selectedBikeType.value,
           },
         };
@@ -216,6 +220,10 @@ export default defineComponent({
 
     // Add and remove waypoint handlers
     const addWaypoint = () => {
+      if (waypoints.value.length >= 5) {
+        alert('Maksymalna liczba przystanków to 5');
+        return;
+      }
       waypoints.value.push('');
     };
 
