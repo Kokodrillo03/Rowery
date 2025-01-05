@@ -18,7 +18,6 @@ export class UserService {
             Bucket: process.env.ASSETS_BUCKET, // Your bucket name
             Key: `users/${addUserImageDto.userId.toString()}/image`, // File path in bucket
             Expires: 60 * 5, // URL expiry time in seconds
-            ContentType: 'image/*', // Expected content type
         };
         
         const uploadUrl = await s3.getSignedUrlPromise('putObject', s3Params);
