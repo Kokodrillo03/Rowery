@@ -69,7 +69,6 @@ import 'leaflet/dist/leaflet.css';
 import roadBikeImage from '@/assets/roadBike.png';
 import mountainBikeImage from '@/assets/mountainBike.png';
 import trekkingBikeImage from '@/assets/normalBike.png';
-import markerIcon from 'leaflet/dist/images/marker-icon-2x.png';
 
 
 export default defineComponent({
@@ -174,7 +173,7 @@ export default defineComponent({
         }
 
         // Formulate request to the routing backend
-        const wayPoints = allLatLon.map(
+        const wayPoints = allLatLon.filter(latLng => !!latLng).map(
           (latLng) => `${latLng.lat},${latLng.lng}`,
         );
 
@@ -203,7 +202,7 @@ export default defineComponent({
           const polyline = L.polyline(routeCoordinates, { color: 'blue' });
           const wayPointMarkers = allLatLon
             .filter((coord) => !!coord)
-            .map((coord) => L.marker([coord.lat, coord.lng], { icon: markerIcon }));
+            .map((coord) => L.marker([coord.lat, coord.lng]));
           routeLayers = L.layerGroup([polyline, ...wayPointMarkers]).addTo(map);
           map.fitBounds(polyline.getBounds());
         } else {
