@@ -9,6 +9,5 @@ export class UserController {
     @Get('imageUpload')
     addUserImage(@Query() createUserDto: AddUserImageDto) {
         return this.userService.addUserImage(createUserDto);
-
     }
 }

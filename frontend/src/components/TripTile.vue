@@ -21,7 +21,7 @@ import { useRouter } from 'vue-router';
 export default defineComponent({
   name: 'TripTile',
   props: {
-    id: { type: Number, required: true },
+    _id: { type: Number, required: true },
     image: { type: String, required: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -32,7 +32,7 @@ export default defineComponent({
     const router = useRouter();
 
     const redirectToTrip = () => {
-      router.push(`/trips/${props.id}`);
+      router.push(`/trips/${props._id}`);
     };
 
     const hasUserInformation = props.username && props.userImage;

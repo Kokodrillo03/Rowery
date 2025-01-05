@@ -9,7 +9,7 @@
     <div v-else class="row g-4">
       <div v-for="(trip, index) in trips" :key="index" class="col-12 col-md-6 col-lg-4">
         <TripTile
-          :id="trip.id"
+          :_id="trip._id"
           :image="trip.image"
           :title="trip.title"
           :description="trip.description"
@@ -46,7 +46,7 @@ export default defineComponent({
         console.error(error);
         trips.value = [
           {
-            id: 1,
+            _id: '1',
             image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
             title: 'Mountain Adventure',
             description: 'A thrilling route through the mountains.',
@@ -54,7 +54,7 @@ export default defineComponent({
             userImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=40',
           },
           {
-            id: 2,
+            _id: '2',
             image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
             title: 'Seaside Stroll',
             description: 'A relaxing walk along the coastline.',
@@ -62,7 +62,7 @@ export default defineComponent({
             userImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=40',
           },
           {
-            id: 3,
+            _id: '4',
             image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
             title: 'Forest Trail',
             description: 'Discover the beauty of the forest.',
@@ -70,7 +70,7 @@ export default defineComponent({
             userImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=40',
           },
           {
-            id: 4,
+            _id: '5',
             image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
             title: 'Seaside Stroll',
             description: 'A relaxing walk along the coastline.',
@@ -78,7 +78,7 @@ export default defineComponent({
             userImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=40',
           },
           {
-            id: 5,
+            _id: '6',
             image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
             title: 'Forest Trail',
             description: 'Discover the beauty of the forest.',

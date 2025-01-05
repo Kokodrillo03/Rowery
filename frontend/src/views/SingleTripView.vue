@@ -30,7 +30,7 @@ export default defineComponent({
   name: 'SingleTripView',
   props: {
     tripId: {
-      type: Number,
+      type: String,
       required: true,
     },
   },
@@ -43,7 +43,7 @@ export default defineComponent({
         trip.value = response.data;
       } catch (error) {
         trip.value = {
-          id: 0,
+          _id: 'qwe',
           title: 'Trip not found',
           description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
           username: 'Krzysztofek',

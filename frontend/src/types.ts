@@ -1,5 +1,5 @@
 export interface Route {
-  id: number
+  _id: string
   image: string
   title: string
   description: string
