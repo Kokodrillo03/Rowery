@@ -12,9 +12,9 @@
 
     <div class="row">
       <h3 class="mb-4">Your Trips</h3>
-      <div class="col-md-4 mb-4" v-for="trip in trips" :key="trip.id">
+      <div class="col-md-4 mb-4" v-for="trip in trips" :key="trip._id">
         <TripTile
-          :id="trip.id"
+          :_id="trip._id"
           :image="trip.image"
           :title="trip.title"
           :description="trip.description"
