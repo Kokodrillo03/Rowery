@@ -300,7 +300,9 @@ Resources:
           - Content-Type
           - X-Amz-Date
           - Authorization
+          - authorization
           - X-Api-Key
+          - content-type
         AllowOrigin: "'*'"
         AllowMethods: "'OPTIONS,GET,POST,PUT,DELETE'"
       Domain:
