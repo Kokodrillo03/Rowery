@@ -49,10 +49,8 @@ Resources:
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders: ["*"]
-            AllowedMethods: ["GET", "POST", "PUT", "DELETE", "HEAD"]
+            AllowedMethods: ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"]
             AllowedOrigins: ["*"]
-            ExposeHeaders: ["ETag", "x-amz-meta-custom-header"]
-            MaxAge: 3000
 
   AssetsBucketPolicy:
     Type: AWS::S3::BucketPolicy

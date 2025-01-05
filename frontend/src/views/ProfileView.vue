@@ -62,7 +62,7 @@ export default defineComponent({
       const token = await getAccessTokenSilently();
       const userId = user.value?.sub;
       try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/trip/${userId}`, {
+        const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/trip/user/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
