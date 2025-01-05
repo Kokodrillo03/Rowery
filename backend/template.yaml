@@ -49,7 +49,7 @@ Resources:
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders: ["*"]
-            AllowedMethods: ["*"]
+            AllowedMethods: ["GET", "POST", "PUT", "DELETE", "HEAD"]
             AllowedOrigins: ["*"]
 
   AssetsBucketPolicy:
