@@ -10,4 +10,9 @@ export class UserController {
     addUserImage(@Query() createUserDto: AddUserImageDto) {
         return this.userService.addUserImage(createUserDto);
     }
+
+    @Get('picture/:userId')
+    getUserImage(@Query('userId') userId: string) {
+        return this.userService.getUserImage(userId);
+    }
 }

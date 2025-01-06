@@ -3,7 +3,12 @@
     <div class="row justify-content-center">
       <div class="col-md-8 text-center">
         <div class="profile-header mb-4">
-          <img :src="user?.picture" alt="Profile Picture" class="rounded-circle profile-picture" @click="triggerFileInput" />
+          <img
+            :src="userPicture"
+            alt="Profile Picture"
+            class="rounded-circle profile-picture"
+            @click="triggerFileInput"
+          />
           <input type="file" ref="fileInput" @change="uploadProfilePicture" accept="image/*" style="display: none;" />
           <h2 class="mt-3">{{ user?.name }}</h2>
         </div>
@@ -32,6 +37,7 @@ import { useAuth0 } from '@auth0/auth0-vue';
 import axios from 'axios';
 import { Route } from '@/types';
 import TripTile from '@/components/TripTile.vue';
+import defProfilePicture from '@/assets/profile_pic.jpg';
 
 export default defineComponent({
   name: 'ProfileView',
@@ -40,7 +46,7 @@ export default defineComponent({
   },
   setup() {
     const trips = ref<Route[]>([]);
-    const userMetadata = ref<any>(null);
+    const userPicture = ref<string>('');
     const { user, getAccessTokenSilently } = useAuth0();
     const fileInput = ref<HTMLInputElement | null>(null);
 
@@ -48,14 +54,16 @@ export default defineComponent({
       fileInput.value?.click();
     };
 
-    const fetchUserMetadata = async () => {
-      const accessToken = await getAccessTokenSilently();
-      const { data } = await axios.get('https://dev-3zf4ofit8rok4lhx.us.auth0.com/userinfo', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      userMetadata.value = data.user_metadata;
+    const getUserPicture = async () => {
+      const userId = user.value?.sub;
+      const timestamp = new Date().getTime(); // Current timestamp
+      try {
+        await axios.get(`https://s3.us-east-1.amazonaws.com/rowerowydolnyslask.pl-assets/users/${userId}/image`)
+        userPicture.value = `https://s3.us-east-1.amazonaws.com/rowerowydolnyslask.pl-assets/users/${userId}/image?t=${timestamp}`;
+      }
+      catch (e) {
+        userPicture.value = defProfilePicture;
+      }
     };
 
     const fetchUserTrips = async () => {
@@ -82,7 +90,6 @@ export default defineComponent({
 
       const token = await getAccessTokenSilently();
       const userId = user.value?.sub;
-
       try {
         const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/user/imageUpload`, {
           headers: {
@@ -93,7 +100,7 @@ export default defineComponent({
             imgContentType: file.type,
           }
         });
-        const { uploadUrl, s3Url } = response.data;
+        const { uploadUrl } = response.data;
 
         // Step 2: Upload image to S3
         await axios.put(uploadUrl, file, {
@@ -102,17 +109,7 @@ export default defineComponent({
           },
         });
 
-        await axios.patch(`https://dev-3zf4ofit8rok4lhx.us.auth0.com/api/v2/users/${userId}`, {
-          user_metadata: { picture: s3Url }
-        }, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          }
-        });
-
-        // Step 4: Update local user object
-        fetchUserMetadata();
+        await getUserPicture();
 
       } catch (error) {
         console.error('Error uploading profile picture:', error);
@@ -120,16 +117,18 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      getUserPicture();
       fetchUserTrips();
-      fetchUserMetadata();
     });
 
     return {
       user,
       trips,
       fileInput,
+      userPicture,
       triggerFileInput,
       uploadProfilePicture,
+      defProfilePicture
     };
   },
 });

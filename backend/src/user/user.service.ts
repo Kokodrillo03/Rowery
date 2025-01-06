@@ -28,4 +28,16 @@ export class UserService {
             s3Url
         };
     }
+
+    async getUserImage(userId: string): Promise<string> {
+        const s3 = new AWS.S3({
+            region: 'us-east-1',
+        });
+        const s3Params = {
+            Bucket: process.env.ASSETS_BUCKET, // Your bucket name
+            Key: `users/${userId}/image`, // File path in bucket
+        };
+        const s3Url = `https://s3.us-east-1.amazonaws.com/${s3Params.Bucket}/${s3Params.Key}`;
+        return s3Url;
+    }
 }

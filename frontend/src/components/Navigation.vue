@@ -38,8 +38,8 @@
               Wyloguj
             </button>
           </li>
-          <li class="nav-item" v-if="user?.picture">
-            <img :src="user?.picture" alt="user image" class="rounded-circle" width="40" height="40">
+          <li class="nav-item" v-if="isAuthenticated">
+            <img :src="userPicture" alt="user image" class="rounded-circle" width="40" height="40">
           </li>
         </ul>
       </div>
@@ -49,10 +49,26 @@
 
 <script setup lang="ts">
 import { useAuth0 } from '@auth0/auth0-vue';
-import { ref, onMounted } from "vue";
+import { ref, watch } from 'vue'
+import axios from 'axios'
+import defProfilePicture from '@/assets/profile_pic.jpg'
 
-// Initialize Auth0
+const userPicture = ref<string>();
+
 const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
+
+const getUserPicture = async () => {
+  if (!isAuthenticated) return;
+  console.log(user.value?.sub)
+  const userId = user.value?.sub;
+  try {
+    await axios.get(`https://s3.us-east-1.amazonaws.com/rowerowydolnyslask.pl-assets/users/${userId}/image`)
+    userPicture.value = `https://s3.us-east-1.amazonaws.com/rowerowydolnyslask.pl-assets/users/${userId}/image`;
+  }
+  catch (e) {
+    userPicture.value = defProfilePicture;
+  }
+};
 
 
 const login = () => {
@@ -63,7 +79,7 @@ const logoutUser = () => {
   logout();
 };
 
-onMounted(() => {
-  console.log(user?.value?.picture);
+watch( user, () => {
+  getUserPicture();
 });
 </script>

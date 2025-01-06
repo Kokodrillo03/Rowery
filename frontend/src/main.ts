@@ -15,7 +15,7 @@ app.use(
     authorizationParams: {
       redirect_uri: window.location.origin,
       audience: 'https://api.rowerowydolnyslask',
-      scope: 'openid profile email read:current_user',
+      scope: 'openid profile email read:current_user update:users',
     }
   })
 );

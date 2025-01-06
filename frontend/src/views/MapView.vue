@@ -325,7 +325,6 @@ export default defineComponent({
           description: routeDescription.value,
           userId: user.value?.sub,
           username: user.value?.name,
-          userImage: user.value?.picture,
           wayPoints: allLatLon.map(latLon => [latLon.lat, latLon.lng]),
           route: routeCoordinates,
           imgContentType: coverImage.value.type

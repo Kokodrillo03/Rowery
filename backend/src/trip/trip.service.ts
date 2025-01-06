@@ -17,6 +17,10 @@ export class TripService {
 
     async createTrip(createTripDto: CreateTripDto): Promise<{uploadUrl: string}> {
         try {
+            const newTrip = {
+                ...createTripDto,
+                userImage: createTripDto.userId
+            }
             const createdTrip = new this.tripModel(createTripDto);
             const savedTrip = await createdTrip.save();
 
