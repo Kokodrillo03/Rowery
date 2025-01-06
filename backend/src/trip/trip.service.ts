@@ -7,38 +7,41 @@ import { CreateTripDto } from './dto/createTrip.dto';
 import * as AWS from 'aws-sdk';
 import { GetUsersTripDto } from './dto/getUsersTrip.dto';
 import { GetTripDto } from './dto/getTrip.dto';
+import { HttpService } from '@nestjs/axios'
+import { firstValueFrom } from 'rxjs'
 
 @Injectable()
 export class TripService {
 
     constructor(
         @InjectModel(TripEntity.name) private tripModel: Model<TripEntity>,
+        private readonly httpService: HttpService,
     ) {}
 
     async createTrip(createTripDto: CreateTripDto): Promise<{uploadUrl: string}> {
+        const bucketName = process.env.ASSETS_BUCKET;
         try {
-            const newTrip = {
-                ...createTripDto,
-                userImage: createTripDto.userId
-            }
+            const userImageUrl = `https://s3.us-east-1.amazonaws.com/${bucketName}/users/${createTripDto.userId}/image`;
+            await firstValueFrom(this.httpService.get(userImageUrl).pipe());
+            createTripDto.userImage = userImageUrl;
+        } catch (error) {}
+        try {
             const createdTrip = new this.tripModel(createTripDto);
             const savedTrip = await createdTrip.save();
 
-            // Configure AWS S3 client
             const s3 = new AWS.S3({
                 region: 'us-east-1',
             });
 
             const s3Params = {
-                Bucket: process.env.ASSETS_BUCKET,
+                Bucket: bucketName,
                 Key: `trips/${savedTrip._id.toString()}/image`,
                 Expires: 60 * 5,
                 ContentType: createTripDto.imgContentType,
             };
-
             const uploadUrl = await s3.getSignedUrlPromise('putObject', s3Params);
 
-            const imageUrl = `https://s3.us-east-1.amazonaws.com/${s3Params.Bucket}/${s3Params.Key}`;
+            const imageUrl = `https://s3.us-east-1.amazonaws.com/${bucketName}/${s3Params.Key}`;
             await this.tripModel.findByIdAndUpdate(
               savedTrip._id,
               { image: imageUrl }

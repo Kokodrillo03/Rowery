@@ -3,5 +3,6 @@ export class CreateTripDto {
     description: string;
     userId: string;
     username: string;
+    userImage: string;
     imgContentType: string;
 }

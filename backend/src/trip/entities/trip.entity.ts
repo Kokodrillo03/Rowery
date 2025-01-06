@@ -42,6 +42,18 @@ export class TripEntity implements Trip {
 
     @Prop({
         required: false,
+        default: ''
+    })
+    username: string;
+
+    @Prop({
+        required: false,
+        default: '',
+    })
+    userImage: string;
+
+    @Prop({
+        required: false,
         default: []
     })
     wayPoints: number[][];

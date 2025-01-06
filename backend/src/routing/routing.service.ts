@@ -8,8 +8,6 @@ export class RoutingService {
         private readonly httpService: HttpService,
     ) {}
 
-
-
     async getRoute(waypoints: string, bikeType: string) {
         const bikeTypeGraphHopperTypeMap = {
             'Trekkingowy': 'bike',
