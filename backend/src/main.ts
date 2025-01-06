@@ -28,8 +28,7 @@ async function bootstrap(): Promise<Server> {
   app.enableCors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Authorization, X-Requested-With, Accept',
-    exposedHeaders: '*',
+    allowedHeaders: '*',
     credentials: true,
   });
   const config = new DocumentBuilder()
