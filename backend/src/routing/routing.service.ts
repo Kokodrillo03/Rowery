@@ -25,6 +25,8 @@ export class RoutingService {
             const path = response.data.paths[0];
             return {
                 points: path.points,
+                distance: path.distance,
+                time: path.time,
             }
         } catch (e) {
             console.log(e);
