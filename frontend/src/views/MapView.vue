@@ -22,7 +22,11 @@
           </div>
         </div>
 
-        <div class="row g-2 align-items-center" v-for="(waypoint, index) in waypoints" :key="index">
+        <div
+          class="row g-2 align-items-center"
+          v-for="(waypoint, index) in waypoints"
+          :key="index"
+        >
           <div class="col">
             <input
               type="text"
@@ -32,26 +36,36 @@
             />
           </div>
           <div class="col-auto">
-            <button class="btn btn-danger" @click="removeWaypoint(index)">Usuń</button>
+            <button class="btn btn-danger" @click="removeWaypoint(index)">
+              Usuń
+            </button>
           </div>
         </div>
 
         <!-- Add Waypoint Button -->
         <div class="mt-2 mb-2 text-center">
-          <button class="btn btn-secondary" @click="addWaypoint">Dodaj Przystanek</button>
+          <button class="btn btn-secondary" @click="addWaypoint">
+            Dodaj Przystanek
+          </button>
         </div>
 
         <!-- Search Route and Bike Type Selection -->
         <div class="row g-2 align-items-center">
           <div class="col-auto">
-            <button class="btn btn-primary" @click="searchRoute">Wyszukaj Trasę</button>
+            <button class="btn btn-primary" @click="searchRoute">
+              Wyszukaj Trasę
+            </button>
           </div>
           <div class="col">
             <div class="d-flex justify-content-around">
-              <div v-for="(type, index) in bikeTypes" :key="index" class="text-center">
+              <div
+                v-for="(type, index) in bikeTypes"
+                :key="index"
+                class="text-center"
+              >
                 <button
                   @click="selectedBikeType = type"
-                  :class="{'btn': true, active: selectedBikeType === type}"
+                  :class="{ 'btn': true, active: selectedBikeType === type }"
                 >
                   <img :src="bikeImages[type]" :alt="type" height="40" />
                   <br />
@@ -62,9 +76,17 @@
           </div>
         </div>
 
+        <!-- Route Summary Box -->
+        <div v-if="isRouteDisplayed" class="route-summary mt-3">
+          <p><strong>Dystans:</strong> {{ routeLength }} km</p>
+          <p><strong>Czas:</strong> {{ routeTime }}</p>
+        </div>
+
         <!-- Share Route Button -->
         <div v-if="isRouteDisplayed" class="text-center mt-2 mb-2">
-          <button class="btn btn-info" @click="openShareDialog">Udostępnij trasę</button>
+          <button class="btn btn-info" @click="openShareDialog">
+            Udostępnij trasę
+          </button>
         </div>
 
         <!-- Share Route Dialog -->
@@ -76,7 +98,7 @@
                 <input
                   type="text"
                   v-model="routeTitle"
-                  placeholder="Title"
+                  placeholder="Tytuł"
                   class="form-control"
                   required
                 />
@@ -84,7 +106,7 @@
               <div class="mb-3">
                 <textarea
                   v-model="routeDescription"
-                  placeholder="Description"
+                  placeholder="Opis"
                   class="form-control"
                   rows="4"
                   required
@@ -102,8 +124,16 @@
                 <img :src="imagePreview" alt="Image Preview" class="img-fluid" />
               </div>
               <div class="d-flex justify-content-end">
-                <button type="button" class="btn btn-secondary me-2" @click="closeShareDialog">Anuluj</button>
-                <button type="submit" class="btn btn-primary">Udostępnij</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary me-2"
+                  @click="closeShareDialog"
+                >
+                  Anuluj
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  Udostępnij
+                </button>
               </div>
             </form>
           </div>
@@ -131,6 +161,8 @@ export default defineComponent({
     const mapRef = ref<L.Map | null>(null);
     const fromDestination = ref<string>('');
     const toDestination = ref<string>('');
+    const routeLength = ref<number>(null);
+    const routeTime = ref<string>(null);
     const waypoints = ref<string[]>([]);
     const selectedBikeType = ref<string>('Szosowy');
     const bikeTypes = ref<string[]>(['Szosowy', 'Gorski', 'Trekkingowy']);
@@ -139,6 +171,7 @@ export default defineComponent({
       Gorski: mountainBikeImage,
       Trekkingowy: trekkingBikeImage,
     });
+
     let map: L.Map;
     let routeLayers: L.LayerGroup;
     let routeCoordinates: [number, number][] = [];
@@ -168,7 +201,7 @@ export default defineComponent({
 
     const searchRoute = async () => {
       try {
-        if(!fromDestination.value || !toDestination.value) {
+        if (!fromDestination.value || !toDestination.value) {
           alert('Podaj miejsce początkowe i końcowe');
           return;
         }
@@ -270,7 +303,19 @@ export default defineComponent({
             .map((coord) => L.marker([coord.lat, coord.lng]));
           routeLayers = L.layerGroup([polyline, ...wayPointMarkers]).addTo(map);
           map.fitBounds(polyline.getBounds());
-          isRouteDisplayed.value = true; // This flag is set when a route is displayed
+
+          routeLength.value = (routeData.distance / 1000).toFixed(2); // Convert meters to kilometers
+          console.log(routeLength.value)
+          const durationInSeconds = routeData.time / 1000;
+          const hours = Math.floor(durationInSeconds / 3600);
+          const minutes = Math.floor((durationInSeconds % 3600) / 60);
+          routeTime.value =
+            hours > 0
+              ? `${hours} h ${minutes} min`
+              : `${minutes} min`; // Format duration nicely
+          isRouteDisplayed.value = true;
+
+
         } else {
           alert('Trasa nie znaleziono');
         }
@@ -388,10 +433,13 @@ export default defineComponent({
       onImageChange,
       shareRoute,
       imagePreview,
+      routeLength,
+      routeTime,
     };
   },
 });
 </script>
+
 
 <style scoped>
 .map-container {
@@ -444,4 +492,10 @@ button.active {
 .form-group > .row {
   margin-bottom: 10px;
 }
+
+.route-summary {
+  padding: 10px;
+  border-radius: 5px;
+}
+
 </style>

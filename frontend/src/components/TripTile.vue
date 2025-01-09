@@ -4,8 +4,10 @@
       <img :src="image" alt="Tile Image" class="img-fluid" />
     </div>
     <div class="tile-content">
-      <h5 class="tile-title">{{ title }}</h5>
-      <p class="tile-description">{{ description }}</p>
+      <div class="tile-header">
+        <h5 class="tile-title">{{ title }}</h5>
+        <span v-if="showRemoveOption" class="remove-icon">X</span>
+      </div>
     </div>
     <div class="tile-footer" v-if="hasUserInformation">
       <img :src="userImage" alt="User Image" class="user-avatar" />
@@ -27,6 +29,7 @@ export default defineComponent({
     description: { type: String, required: true },
     username: { type: String, required: false },
     userImage: { type: String, required: false },
+    showRemoveOption: { type: Boolean, default: false }, // Nowy prop dla czerwonego X
   },
   setup(props) {
     const router = useRouter();
@@ -75,14 +78,22 @@ export default defineComponent({
   flex-grow: 1;
 }
 
+.tile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .tile-title {
   font-size: 1.25rem;
   margin-bottom: 10px;
 }
 
-.tile-description {
-  font-size: 0.9rem;
-  color: #666;
+.remove-icon {
+  color: red;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .tile-footer {

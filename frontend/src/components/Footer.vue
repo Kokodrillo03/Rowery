@@ -2,17 +2,17 @@
   <footer class="footer bg-body-tertiary mt-auto py-3">
     <div class="container text-center">
       <p class="mb-0">
-        &copy; 2024 Placeholder Company. All rights reserved.
+        &copy; 2025 Krzysztof Dziurman. Wszystkie prawa zastrzeżone.
       </p>
       <ul class="list-inline mt-2">
         <li class="list-inline-item">
-          <a href="#" class="text-decoration-none">Privacy Policy</a>
+          <a href="#" class="text-decoration-none">Polityka Prywatności</a>
         </li>
         <li class="list-inline-item">
-          <a href="#" class="text-decoration-none">Terms of Service</a>
+          <a href="#" class="text-decoration-none">Regulamin</a>
         </li>
         <li class="list-inline-item">
-          <a href="#" class="text-decoration-none">Contact Us</a>
+          <a href="#" class="text-decoration-none">Kontakt</a>
         </li>
       </ul>
     </div>

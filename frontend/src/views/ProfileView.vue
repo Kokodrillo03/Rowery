@@ -16,7 +16,7 @@
     </div>
 
     <div class="row">
-      <h3 class="mb-4">Your Trips</h3>
+      <h3 class="mb-4">Twoje Trasy</h3>
       <div class="col-md-4 mb-4" v-for="trip in trips" :key="trip._id">
         <TripTile
           :_id="trip._id"
@@ -25,6 +25,7 @@
           :description="trip.description"
           :username="trip.username"
           :userImage="trip.userImage"
+          :showRemoveOption="true"
         />
       </div>
     </div>
